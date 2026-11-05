@@ -1,0 +1,589 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>SWING — live jazz &amp; rock in Sofia since 1995</title>
+<meta name="description" content="The oldest standing jazz & rock stage in town. This month's live program, reservations and the bar menu. Swingin' since '95.">
+<link rel="canonical" href="https://swingsofia.com/">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="SWING">
+<meta property="og:title" content="SWING — live jazz & rock in Sofia since 1995">
+<meta property="og:description" content="The oldest standing jazz & rock stage in town. This month's live program, reservations and the bar menu.">
+<meta property="og:url" content="https://swingsofia.com/">
+<meta property="og:image" content="https://swingsofia.com/assets/og.jpg">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="theme-color" content="#660033">
+<link rel="icon" href="assets/icon-180.png" type="image/png">
+<link rel="apple-touch-icon" href="assets/icon-180.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:ital,wght@0,500;0,600;0,700;0,800;0,900;1,500&family=Fraunces:ital,opsz,wght,SOFT,WONK@0,9..144,300..900,0..100,0..1;1,9..144,300..900,0..100,0..1&family=IBM+Plex+Mono:wght@400;500;600&family=Oswald:wght@600;700&family=Playfair+Display:ital,wght@0,900;1,900&display=swap">
+<style>
+/* ------------------------------------------------------------
+   SWING homepage. Same brand as the menu site: burgundy ground, cream type,
+   orange-red punctuation. Fixed copy lives in the HTML below; everything about
+   the program is drawn from program.js by the script at the bottom.
+   ------------------------------------------------------------ */
+:root{
+  --bg:#660033;
+  --bg-deep:#4D0026;
+  --fg:#FFFCF1;
+  --fg-soft:rgba(255,252,241,.78);
+  --fg-mute:rgba(255,252,241,.62);
+  --accent:#F63719;
+  --rule:rgba(255,252,241,.18);
+  --ink:#1F000F;
+  --burg-soft:rgba(102,0,51,.72);
+  --display:'Fraunces','Playfair Display',Georgia,'Times New Roman',serif;
+  --body:'Barlow Condensed','Oswald','Arial Narrow','Roboto Condensed',sans-serif;
+  --mono:'IBM Plex Mono',ui-monospace,SFMono-Regular,Menlo,monospace;
+  --pad:clamp(20px,4vw,48px);
+  color-scheme:dark;
+}
+*{box-sizing:border-box}
+html,body{margin:0}
+html{scroll-behavior:smooth;-webkit-text-size-adjust:100%}
+@media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}}
+body{
+  background:var(--bg);color:var(--fg);
+  font-family:var(--body);font-size:18px;line-height:1.25;
+  min-height:100%;position:relative;overflow-x:clip;
+}
+img{max-width:100%}
+[hidden]{display:none!important}
+a{color:inherit}
+a:hover{text-decoration:underline;text-decoration-color:var(--accent);text-decoration-thickness:2px;text-underline-offset:5px}
+:focus-visible{outline:2px solid var(--accent);outline-offset:3px}
+.grain{position:fixed;inset:0;background:url(assets/grain-dark.png) repeat;background-size:240px 240px;opacity:.07;pointer-events:none;z-index:0}
+.skip{position:absolute;left:-999px;top:8px;z-index:50;background:var(--fg);color:var(--bg);padding:10px 14px;font:600 14px var(--mono)}
+.skip:focus{left:8px}
+.wrap{position:relative;z-index:1;max-width:1200px;margin:0 auto;padding-left:max(var(--pad),env(safe-area-inset-left,0px));padding-right:max(var(--pad),env(safe-area-inset-right,0px))}
+section{scroll-margin-top:12px}
+
+.mono{font:500 12px/1.4 var(--mono);letter-spacing:.14em;text-transform:uppercase}
+.disp{font-family:var(--display);font-variation-settings:'SOFT' 100,'WONK' 1,'opsz' 144}
+.ital{font-family:var(--display);font-style:italic;font-weight:400;font-variation-settings:'SOFT' 100,'WONK' 1,'opsz' 14}
+.sub{font:italic 400 17px/1.3 var(--display);font-variation-settings:'SOFT' 100,'WONK' 1,'opsz' 14;color:var(--fg-soft)}
+
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:48px;padding:0 26px;border-radius:999px;text-decoration:none;font:700 19px/1 var(--body);letter-spacing:.06em;text-transform:uppercase;text-align:center}
+.btn:hover{text-decoration:none}
+.btn-cream{background:var(--fg);color:var(--bg)}
+.btn-cream:hover{background:var(--accent);color:var(--fg)}
+.btn-line{border:2px solid rgba(255,252,241,.55);color:var(--fg)}
+.btn-line:hover{border-color:var(--fg)}
+.btn-burg{border:2px solid var(--bg);color:var(--bg)}
+.btn-burg:hover{background:var(--bg);color:var(--fg)}
+
+/* Top bar */
+.top{display:flex;align-items:center;justify-content:space-between;gap:12px 32px;flex-wrap:wrap;padding-top:calc(18px + env(safe-area-inset-top,0px));padding-bottom:14px}
+.top .home{display:block;flex:0 0 auto;padding:8px 0}
+.top .home img{width:118px;height:auto;display:block}
+.top nav{display:flex;align-items:center;gap:0 26px;flex-wrap:wrap}
+.navlink{text-decoration:none;color:inherit;padding:14px 0;display:inline-block}
+.navlink.chip{border:1.5px solid rgba(255,252,241,.45);border-radius:999px;padding:13px 16px}
+.lang{display:inline-flex;border:1.5px solid rgba(255,252,241,.25);border-radius:999px;overflow:hidden}
+.lang button{appearance:none;border:0;background:transparent;color:var(--fg);font:500 12px/1.4 var(--mono);letter-spacing:.14em;text-transform:uppercase;padding:13px 12px;cursor:pointer}
+.lang button[aria-pressed="true"]{background:var(--fg);color:var(--bg)}
+
+/* Hero */
+.hero{display:flex;flex-wrap:wrap;align-items:flex-end;gap:56px 64px;padding-top:36px;padding-bottom:92px}
+.hero .lead{flex:1 1 560px;min-width:0;display:flex;flex-direction:column;align-items:flex-start}
+.hero .since{width:min(68%,300px);height:auto;transform:rotate(-5deg);margin:0 0 -4px 2%}
+.hero .logo{width:min(100%,620px);height:auto;display:block}
+.hero .tag{margin:26px 0 0;font-size:clamp(22px,2.4vw,30px);line-height:1.2;max-width:28ch;font-variation-settings:'SOFT' 100,'WONK' 1,'opsz' 30}
+.hero .tag-sub{margin:8px 0 0;color:var(--fg-mute)}
+.hero .ctas{display:flex;flex-wrap:wrap;gap:14px;margin-top:36px}
+.next{flex:0 1 400px;min-width:min(100%,300px);position:relative;transform:rotate(1.2deg)}
+.next .star{position:absolute;right:-26px;top:-32px;width:94px;height:auto;transform:rotate(12deg);z-index:2}
+.next .star-txt{position:absolute;right:-26px;top:-32px;width:94px;height:96px;display:flex;align-items:center;justify-content:center;z-index:3;font:900 21px/1 var(--body);color:var(--fg);letter-spacing:.08em;transform:rotate(-8deg)}
+.next .card{background:var(--fg);color:var(--bg);padding:30px 30px 24px;box-shadow:6px 8px 0 rgba(0,0,0,.28)}
+.next .when{display:flex;align-items:center;gap:10px}
+.next .when::before{content:"";width:10px;height:10px;border-radius:50%;background:var(--accent);flex:0 0 auto}
+.next .act{font:700 clamp(34px,3.6vw,46px)/.95 var(--body);text-transform:uppercase;margin-top:14px;overflow-wrap:anywhere}
+.next .sub{font-size:20px;color:rgba(102,0,51,.82);margin-top:6px}
+.next .foot{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;margin-top:24px;border-top:1.5px solid rgba(102,0,51,.18);padding-top:14px}
+.next .foot a{color:var(--bg);text-decoration:none;border-bottom:2px solid var(--accent);padding:6px 0 3px}
+@media (max-width:560px){.next{transform:none}.next .card{padding:24px 22px 20px}.next .star,.next .star-txt{right:-10px;top:-28px;width:84px}.next .star-txt{height:86px;font-size:19px}}
+
+/* Ticker */
+.ticker{position:relative;z-index:1;background:var(--fg);color:var(--bg);border-top:3px solid var(--accent);border-bottom:3px solid var(--accent);padding:13px 0;overflow:hidden}
+.tick{display:flex;width:max-content;animation:tick 90s linear infinite}
+.tick span.item{display:inline-flex;align-items:center;gap:18px;padding:0 18px;white-space:nowrap;font:700 21px/1 var(--body);text-transform:uppercase;letter-spacing:.03em}
+.tick span.item i{font-style:normal;color:var(--accent);font-size:15px}
+@keyframes tick{from{transform:translateX(0)}to{transform:translateX(-50%)}}
+@media (prefers-reduced-motion:reduce){.tick{animation:none;flex-wrap:wrap;width:auto;row-gap:8px}}
+
+/* Program */
+#program{position:relative;overflow:hidden}
+#program .wm{position:absolute;right:-4%;top:150px;width:min(72vw,820px);height:auto;opacity:.07;transform:rotate(-14deg);pointer-events:none}
+#program .sax{position:absolute;right:2%;bottom:90px;height:300px;width:auto;transform:rotate(14deg);opacity:.5;pointer-events:none}
+#program .wrap{padding-top:88px;padding-bottom:96px}
+.prog-head{display:flex;flex-wrap:wrap;align-items:flex-end;justify-content:space-between;gap:20px 40px}
+.prog-head h2{margin:0;display:flex;align-items:center;gap:20px;flex-wrap:wrap}
+.prog-head .month{font-size:clamp(40px,10.5vw,104px);font-weight:900;line-height:.9;letter-spacing:-.01em;text-transform:uppercase;white-space:nowrap}
+.prog-head .month.two{white-space:normal;font-size:clamp(32px,7vw,80px)}
+@media (max-width:560px){.prog-foot .btn{width:100%;white-space:normal;line-height:1.15;padding:12px 20px}}
+.prog-head .month i{font-style:normal;font-weight:300;opacity:.55}
+.prog-head .live{background:var(--accent);color:var(--fg);font:800 26px/1 var(--body);letter-spacing:.1em;padding:9px 16px 8px;border-radius:999px;text-transform:uppercase;transform:rotate(-3deg)}
+.prog-head .stats{margin:0 0 10px;color:rgba(255,252,241,.7)}
+.days{list-style:none;margin:60px 0 0;padding:0;display:grid;grid-template-columns:1fr;gap:40px 72px}
+@media (min-width:900px){.days{grid-template-columns:1fr 1fr}}
+.day{display:flex;gap:24px;align-items:flex-start}
+.pill{position:relative;flex:0 0 auto;width:92px;height:80px;display:flex;align-items:center;justify-content:center;border-radius:50% 50% 48% 52% / 56% 54% 46% 44%;transform:rotate(-4deg);color:var(--fg);font:900 46px/1 var(--body);letter-spacing:-.02em}
+.pill::after{content:"";position:absolute;inset:0;border-radius:inherit;background:url(assets/grain-dark.png) repeat;background-size:160px 160px;opacity:.22;mix-blend-mode:multiply;pointer-events:none}
+.pill span{position:relative}
+.pill .chip{position:absolute;left:50%;bottom:-12px;transform:translateX(-50%) rotate(-3deg);background:var(--fg);color:var(--bg);font:600 10px/1 var(--mono);letter-spacing:.12em;text-transform:uppercase;padding:5px 9px;border-radius:999px;white-space:nowrap;box-shadow:0 2px 0 rgba(0,0,0,.25)}
+@media (max-width:560px){.pill{width:76px;height:66px;font-size:38px}.day{gap:18px}}
+.shows{display:flex;flex-direction:column;gap:16px;padding-top:4px;min-width:0;flex:1 1 auto}
+.show{display:flex;flex-direction:column;gap:4px}
+.show .meta{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.show .meta i{font-style:normal;color:var(--accent)}
+.show .act{font:700 30px/1.02 var(--body);text-transform:uppercase;letter-spacing:.01em;overflow-wrap:anywhere}
+.badge{display:inline-flex;align-items:center;height:20px;padding:0 9px;border-radius:999px;background:var(--fg);color:var(--bg);border:1.5px solid var(--accent);font:600 10.5px/1 var(--mono);letter-spacing:.12em;text-transform:uppercase}
+.prog-foot{margin-top:72px;display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:16px 28px;border-top:1px solid var(--rule);padding-top:28px}
+.prog-foot p{margin:0;font-size:18px;max-width:46ch}
+.empty{margin:60px 0 0;padding:40px;border:2px dashed var(--rule);text-align:center}
+.empty .act{font:700 34px/1 var(--body);text-transform:uppercase}
+
+/* About */
+#about{background:var(--fg);color:var(--bg)}
+#about .wrap{display:grid;grid-template-columns:1fr;gap:56px 72px;align-items:center;padding-top:96px;padding-bottom:96px}
+@media (min-width:900px){#about .wrap{grid-template-columns:1fr 1fr}}
+#about .eyebrow{margin:0;color:var(--burg-soft)}
+#about h2{margin:14px 0 0;font-weight:900;font-style:italic;font-size:clamp(44px,5.2vw,68px);line-height:.98;letter-spacing:-.01em}
+#about p.body{margin:28px 0 0;font-family:var(--display);font-weight:400;font-size:20px;line-height:1.45;font-variation-settings:'SOFT' 100,'WONK' 0,'opsz' 20;max-width:52ch}
+#about p.body + p.body{margin-top:16px}
+#about p.close{margin:16px 0 0;font-size:22px;line-height:1.35;font-variation-settings:'SOFT' 100,'WONK' 1,'opsz' 22}
+#about .ctas{display:flex;flex-wrap:wrap;gap:14px;margin-top:36px}
+.photo{aspect-ratio:4/5;background:var(--bg);color:var(--fg);position:relative;overflow:hidden;transform:rotate(-1.5deg);display:flex;align-items:center;justify-content:center;padding:24px;box-shadow:8px 10px 0 rgba(102,0,51,.18)}
+.photo img.horn{position:absolute;right:-6%;bottom:-3%;width:58%;height:auto;opacity:.35;transform:rotate(-10deg)}
+.photo img.script{position:relative;width:78%;height:auto;transform:rotate(-8deg)}
+.photo img.real{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;filter:grayscale(1) contrast(1.05);mix-blend-mode:luminosity;opacity:.9}
+
+/* Contact */
+#contact{border-top:3px solid var(--accent)}
+#contact .wrap{display:grid;grid-template-columns:1fr;gap:44px 56px;padding-top:80px;padding-bottom:84px}
+@media (min-width:700px){#contact .wrap{grid-template-columns:repeat(3,minmax(0,1fr))}}
+#contact h2{margin:0;font-weight:900;font-style:italic;font-size:clamp(34px,3.4vw,42px);line-height:1}
+#contact p{margin:14px 0 0;font-size:19px;max-width:36ch}
+.tel{display:inline-block;margin-top:18px;color:var(--fg);border-bottom:2px solid var(--accent);text-decoration:none;padding:6px 0 3px;font:600 26px/1 var(--body);letter-spacing:.04em;font-variant-numeric:tabular-nums}
+.tel:hover{text-decoration:none;color:var(--accent);border-color:var(--fg)}
+.mail{display:none;margin:10px 0 0;font:500 12px/1.4 var(--mono);letter-spacing:.14em;text-transform:uppercase}
+.mail.show{display:block}
+
+/* Footer */
+footer{background:var(--bg-deep);border-top:1px solid var(--rule);position:relative;z-index:1}
+footer .row{display:flex;flex-wrap:wrap;justify-content:space-between;align-items:flex-end;gap:32px 48px;padding-top:56px;padding-bottom:36px}
+footer .brand{display:flex;flex-direction:column;gap:10px}
+footer .brand img{width:110px;height:auto;display:block}
+footer .brand .t{color:var(--fg-soft)}
+footer .brand .s{font-size:15px;color:var(--fg-mute)}
+footer nav{display:flex;flex-wrap:wrap;gap:0 26px}
+footer .horn{height:110px;width:auto;transform:rotate(-8deg)}
+footer .legal{display:flex;flex-wrap:wrap;justify-content:space-between;gap:8px 24px;padding-bottom:calc(28px + env(safe-area-inset-bottom,0px));font-size:11px;color:rgba(255,252,241,.55)}
+
+/* Error state (only shows if program.js is broken) */
+.err{display:none;margin:24px 0;padding:16px;border:2px solid var(--accent);font:500 16px/1.4 var(--body)}
+.err code{font-family:var(--mono);font-size:13px}
+.err.show{display:block}
+</style>
+</head>
+<body>
+<a class="skip" href="#program" data-i18n="skip">Skip to the program</a>
+<div class="grain" aria-hidden="true"></div>
+
+<header class="wrap top">
+  <a class="home" href="#top" id="top" aria-label="SWING — home"><img src="assets/logo-cream.svg" alt="SWING" width="118" height="33"></a>
+  <nav aria-label="Main" class="mono">
+    <a class="navlink" href="#program" data-i18n="nav_program">Program</a>
+    <a class="navlink" href="#about" data-i18n="nav_about">About</a>
+    <a class="navlink" href="#" data-maps data-i18n="nav_find">Find us ↗</a>
+    <a class="navlink chip" href="https://menu.swingsofia.com" data-menu data-i18n="nav_menu">Menu ↗</a>
+    <span class="lang" role="group" aria-label="Language">
+      <button type="button" data-lang="en" aria-pressed="true" lang="en">EN</button>
+      <button type="button" data-lang="bg" aria-pressed="false" lang="bg">БГ</button>
+    </span>
+  </nav>
+</header>
+
+<main>
+  <section class="wrap hero" aria-label="Welcome">
+    <div class="lead">
+      <img class="since" src="assets/since95-cream.svg" alt="Swingin' since '95" width="300" height="178">
+      <img class="logo" src="assets/logo-cream.svg" alt="SWING" width="620" height="174">
+      <p class="ital tag" data-i18n="tagline">The oldest standing jazz &amp; rock stage in town.</p>
+      <p class="mono tag-sub" data-i18n="tagline_sub">(still here, folks)</p>
+      <div class="ctas">
+        <a class="btn btn-cream" href="#program" data-i18n="btn_program">This month's program ↓</a>
+        <a class="btn btn-line" href="https://menu.swingsofia.com" data-menu data-i18n="btn_menu">The menu ↗</a>
+      </div>
+    </div>
+    <aside class="next" aria-label="Next show">
+      <img class="star" src="assets/starburst.svg" alt="" aria-hidden="true">
+      <span class="star-txt" aria-hidden="true">LIVE</span>
+      <div class="card">
+        <div class="mono when" id="next-when"></div>
+        <div class="act" id="next-act"></div>
+        <div class="ital sub" id="next-sub" hidden></div>
+        <div class="foot">
+          <span class="mono" id="next-time"></span>
+          <a class="mono" href="#program" data-i18n="full_program">Full program ↓</a>
+        </div>
+      </div>
+    </aside>
+  </section>
+
+  <div class="ticker" aria-hidden="true"><div class="tick" id="tick"></div></div>
+
+  <section id="program" aria-labelledby="program-h">
+    <img class="wm" src="assets/since95-cream.svg" alt="" aria-hidden="true">
+    <img class="sax" src="assets/sax.svg" alt="" aria-hidden="true">
+    <div class="wrap">
+      <div class="prog-head">
+        <h2 id="program-h"><span class="disp month" id="month-title"></span><span class="live" data-i18n="live">Live</span></h2>
+        <p class="mono stats" id="stats"></p>
+      </div>
+      <div class="err" id="err" role="alert"></div>
+      <ol class="days" id="days"></ol>
+      <div class="prog-foot">
+        <p class="sub" data-i18n="program_note">Program changes show up here first. Tables go fast on weekends — call ahead.</p>
+        <a class="btn btn-line" href="#" data-tel><span data-i18n="reserve">Reserve a table</span>&nbsp;· <span data-phone></span></a>
+      </div>
+    </div>
+  </section>
+
+  <section id="about" aria-labelledby="about-h">
+    <div class="wrap">
+      <div>
+        <p class="mono eyebrow" data-i18n="about_eyebrow">Est. 1995 · Sofia</p>
+        <h2 id="about-h" class="disp" data-i18n="about_h">Still here, folks.</h2>
+        <p class="body" data-i18n="about_p1">SWING opened in 1995 and has been loud ever since — the oldest standing jazz &amp; rock stage in town, and still a working one: live bands several nights a week, not a museum of them.</p>
+        <p class="body" data-i18n="about_p2">Jazz, rock, grunge, the occasional acoustic one-man show — whatever's on, it's played live, on a real stage, a few steps from the bar.</p>
+        <p class="ital close" data-i18n="about_p3">Come for the gig. Stay for the bar. No apologies.</p>
+        <div class="ctas">
+          <a class="btn btn-burg" href="#" data-maps data-i18n="find_us">Find us ↗</a>
+          <a class="btn btn-burg" href="https://menu.swingsofia.com" data-menu data-i18n="btn_menu">The menu ↗</a>
+        </div>
+      </div>
+      <div class="photo" id="photo">
+        <img class="horn" src="assets/horn.svg" alt="" aria-hidden="true">
+        <img class="script" src="assets/since95-cream.svg" alt="Swingin' since '95" width="300" height="178">
+      </div>
+    </div>
+  </section>
+
+  <section id="contact" aria-label="Contact">
+    <div class="wrap">
+      <div>
+        <h2 class="disp" data-i18n="c1_h">Make a reservation.</h2>
+        <p class="sub" data-i18n="c1_p">Call and we'll keep you a table. Say the night and how many of you.</p>
+        <a class="tel" href="#" data-tel data-phone></a>
+        <a class="mail" href="#" data-mail></a>
+      </div>
+      <div>
+        <h2 class="disp" data-i18n="c2_h">Book the place.</h2>
+        <p class="sub" data-i18n="c2_p">Private parties, company nights, birthdays with a band. The stage comes with the room.</p>
+        <a class="tel" href="#" data-tel data-phone></a>
+        <a class="mail" href="#" data-mail></a>
+      </div>
+      <div>
+        <h2 class="disp" data-i18n="c3_h">Play here.</h2>
+        <p class="sub" data-i18n="c3_p">Bands and solo acts: call us about a slot. We listen to everything. Eventually.</p>
+        <a class="tel" href="#" data-tel data-phone></a>
+        <a class="mail" href="#" data-mail></a>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer>
+  <div class="wrap row">
+    <div class="brand">
+      <img src="assets/logo-cream.svg" alt="SWING" width="110" height="31">
+      <span class="mono t" data-i18n="tagline">The oldest standing jazz &amp; rock stage in town.</span>
+      <span class="ital s" data-i18n="tagline_sub">(still here, folks)</span>
+    </div>
+    <nav aria-label="Footer" class="mono">
+      <a class="navlink" href="#program" data-i18n="nav_program">Program</a>
+      <a class="navlink" href="#about" data-i18n="nav_about">About</a>
+      <a class="navlink" href="#" data-maps data-i18n="nav_find">Find us ↗</a>
+      <a class="navlink" href="https://menu.swingsofia.com" data-menu data-i18n="nav_menu">Menu ↗</a>
+      <a class="navlink" href="#" data-social="instagram" hidden>Instagram ↗</a>
+      <a class="navlink" href="#" data-social="facebook" hidden>Facebook ↗</a>
+      <a class="navlink" href="#" data-tel data-phone></a>
+    </nav>
+    <img class="horn" src="assets/horn.svg" alt="" aria-hidden="true">
+  </div>
+  <div class="wrap legal mono">
+    <span>© <span id="year"></span> SWING · Sofia</span>
+    <span>swingsofia.com · menu.swingsofia.com</span>
+  </div>
+</footer>
+
+<script src="program.js"></script>
+<script>
+(function(){
+  /* ------------------------------------------------------------
+     Site settings. Edit these when something changes; the program itself lives in program.js.
+     ------------------------------------------------------------ */
+  var CONFIG = {
+    phone: '089 684 0161',
+    phoneTel: '+359896840161',
+    mapsUrl: "https://www.google.com/maps/place/Swingin'+Hall/@42.6832857,23.3340778,771m/data=!3m2!1e3!4b1!4m6!3m5!1s0x40aa85a6d0febf13:0xb31fa060558ce037!8m2!3d42.6832857!4d23.3340778!16s%2Fg%2F1tk6y_cm?entry=ttu",
+    menuUrl: 'https://menu.swingsofia.com',
+    siteUrl: 'https://swingsofia.com',
+    venueName: 'SWING',
+    venueAltName: "Swingin' Hall",
+    geo: { lat: 42.6832857, lng: 23.3340778 },
+    streetAddress: '',        // e.g. 'bul. Dragan Tsankov 8' — used for Google, shown nowhere yet
+    postalCode: '',
+    email: '',                // e.g. 'hello@swingsofia.com' — appears under each phone number when set
+    instagram: '',            // full URL — footer link appears when set
+    facebook: '',             // full URL — footer link appears when set
+    photo: ''                 // e.g. 'assets/stage.jpg' — replaces the placeholder box when set
+  };
+
+  /* Fixed copy in both languages. The script swaps every [data-i18n] element. */
+  var T = {
+    en: {
+      skip: 'Skip to the program',
+      nav_program: 'Program', nav_about: 'About', nav_find: 'Find us ↗', nav_menu: 'Menu ↗',
+      tagline: 'The oldest standing jazz & rock stage in town.', tagline_sub: '(still here, folks)',
+      btn_program: 'This month\u2019s program ↓', btn_menu: 'The menu ↗',
+      tonight: 'Tonight', tomorrow: 'Tomorrow', nextup: 'Next up', starts: 'Starts', full_program: 'Full program ↓',
+      live: 'Live', nights: 'nights', acts: 'acts', updated: 'updated', all_ages: 'All ages',
+      program_note: 'Program changes show up here first. Tables go fast on weekends — call ahead.',
+      reserve: 'Reserve a table',
+      about_eyebrow: 'Est. 1995 · Sofia', about_h: 'Still here, folks.',
+      about_p1: 'SWING opened in 1995 and has been loud ever since — the oldest standing jazz & rock stage in town, and still a working one: live bands several nights a week, not a museum of them.',
+      about_p2: 'Jazz, rock, grunge, the occasional acoustic one-man show — whatever\u2019s on, it\u2019s played live, on a real stage, a few steps from the bar.',
+      about_p3: 'Come for the gig. Stay for the bar. No apologies.',
+      find_us: 'Find us ↗', photo_soon: 'Stage photo coming soon',
+      c1_h: 'Make a reservation.', c1_p: 'Call and we\u2019ll keep you a table. Say the night and how many of you.',
+      c2_h: 'Book the place.', c2_p: 'Private parties, company nights, birthdays with a band. The stage comes with the room.',
+      c3_h: 'Play here.', c3_p: 'Bands and solo acts: call us about a slot. We listen to everything. Eventually.',
+      empty_act: 'New program coming soon', empty_sub: 'Watch this space — or call.', empty_stats: 'Next month\u2019s program coming soon',
+      err: 'The program couldn\u2019t load. <code>program.js</code> probably has a typo (a missing comma or quote). The last good version is on GitHub — restore it, or ask Claude to fix the line.',
+      months: ['January','February','March','April','May','June','July','August','September','October','November','December'],
+      monthsShort: ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'],
+      dows: ['SUN','MON','TUE','WED','THU','FRI','SAT']
+    },
+    bg: {
+      skip: 'Към програмата',
+      nav_program: 'Програма', nav_about: 'За нас', nav_find: 'Намери ни ↗', nav_menu: 'Меню ↗',
+      tagline: 'Най-старата действаща джаз и рок сцена в града.', tagline_sub: '(още сме тук, хора)',
+      btn_program: 'Програмата за месеца ↓', btn_menu: 'Менюто ↗',
+      tonight: 'Тази вечер', tomorrow: 'Утре', nextup: 'Следва', starts: 'Начало', full_program: 'Цялата програма ↓',
+      live: 'Live', nights: 'вечери', acts: 'изпълнения', updated: 'обновено', all_ages: 'Всички възрасти',
+      program_note: 'Промените в програмата се появяват първо тук. В уикенда масите свършват бързо — обади се предварително.',
+      reserve: 'Резервирай маса',
+      about_eyebrow: 'Осн. 1995 · София', about_h: 'Още сме тук, хора.',
+      about_p1: 'SWING отваря врати през 1995 г. и оттогава не е утихвал — най-старата действаща джаз и рок сцена в града, при това все още работеща: групи на живо по няколко вечери в седмицата, а не музей на такива.',
+      about_p2: 'Джаз, рок, грънж, от време на време акустично шоу на един човек — каквото и да е на афиша, свири се на живо, на истинска сцена, на няколко крачки от бара.',
+      about_p3: 'Ела за концерта. Остани за бара. Без извинения.',
+      find_us: 'Намери ни ↗', photo_soon: 'Снимка от сцената — скоро',
+      c1_h: 'Резервирай маса.', c1_p: 'Обади се и ще ти пазим маса. Кажи вечерта и колко сте.',
+      c2_h: 'Наеми мястото.', c2_p: 'Частни партита, фирмени вечери, рождени дни с група. Сцената върви с помещението.',
+      c3_h: 'Свири тук.', c3_p: 'Групи и солови изпълнители: обади се за дата. Слушаме всичко. Рано или късно.',
+      empty_act: 'Новата програма идва скоро', empty_sub: 'Следи тук — или се обади.', empty_stats: 'Програмата за следващия месец идва скоро',
+      err: 'Програмата не можа да се зареди. Вероятно има грешка в <code>program.js</code> (липсваща запетая или кавичка). Последната работеща версия е в GitHub — възстанови я или помоли Claude да поправи реда.',
+      months: ['Януари','Февруари','Март','Април','Май','Юни','Юли','Август','Септември','Октомври','Ноември','Декември'],
+      monthsShort: ['ян','фев','март','апр','май','юни','юли','авг','сеп','окт','ноем','дек'],
+      dows: ['НД','ПН','ВТ','СР','ЧТ','ПТ','СБ']
+    }
+  };
+
+  var PALETTE = ['#F63719', '#2F6BD8', '#CFA32B', '#5C8E2A', '#7A3BB5', '#8E4C1E'];
+  var DAY_MS = 86400000;
+
+  var esc = function (s) { return String(s == null ? '' : s).replace(/[&<>"]/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]; }); };
+  var $ = function (sel, root) { return (root || document).querySelector(sel); };
+  var $$ = function (sel, root) { return Array.prototype.slice.call((root || document).querySelectorAll(sel)); };
+  var parseDate = function (iso) { var p = String(iso).split('-'); return new Date(+p[0], +p[1] - 1, +p[2]); };
+  var pad2 = function (n) { return (n < 10 ? '0' : '') + n; };
+
+  var lang = 'en';
+  try {
+    var saved = localStorage.getItem('swing-lang');
+    if (saved === 'bg' || saved === 'en') lang = saved;
+    else if ((navigator.language || '').toLowerCase().indexOf('bg') === 0) lang = 'bg';
+  } catch (e) {}
+
+  /* ---------- fixed parts: links, phone, copy ---------- */
+  function applyConfig() {
+    $$('[data-maps]').forEach(function (a) { a.href = CONFIG.mapsUrl; a.target = '_blank'; a.rel = 'noopener'; });
+    $$('[data-menu]').forEach(function (a) { a.href = CONFIG.menuUrl; });
+    $$('[data-tel]').forEach(function (a) { a.href = 'tel:' + CONFIG.phoneTel; });
+    $$('[data-phone]').forEach(function (el) { el.textContent = CONFIG.phone; });
+    $$('[data-mail]').forEach(function (a) {
+      if (CONFIG.email) { a.href = 'mailto:' + CONFIG.email; a.textContent = CONFIG.email; a.className = 'mail show'; }
+    });
+    ['instagram', 'facebook'].forEach(function (k) {
+      var a = $('[data-social="' + k + '"]');
+      if (a && CONFIG[k]) { a.href = CONFIG[k]; a.hidden = false; a.target = '_blank'; a.rel = 'noopener'; }
+    });
+    if (CONFIG.photo) {
+      var box = $('#photo');
+      box.innerHTML = '<img class="real" src="' + esc(CONFIG.photo) + '" alt="On stage at SWING">';
+    }
+    $('#year').textContent = String(new Date().getFullYear());
+  }
+
+  function applyCopy() {
+    var t = T[lang];
+    document.documentElement.lang = lang;
+    $$('[data-i18n]').forEach(function (el) {
+      var key = el.getAttribute('data-i18n');
+      if (t[key] != null) el.textContent = t[key];
+    });
+    $$('.lang button').forEach(function (b) { b.setAttribute('aria-pressed', b.getAttribute('data-lang') === lang ? 'true' : 'false'); });
+  }
+
+  /* ---------- the program ---------- */
+  function build() {
+    var t = T[lang];
+    var P = window.SWING_PROGRAM;
+    if (!P || !P.shows || !Array.isArray(P.shows)) throw new Error('no program');
+
+    var shows = P.shows.slice().filter(function (s) { return s && s.date && s.act; });
+    shows.sort(function (a, b) { return (a.date + ' ' + (a.time || '')) < (b.date + ' ' + (b.time || '')) ? -1 : 1; });
+
+    var now = new Date();
+    var t0 = new Date(now.getFullYear(), now.getMonth(), now.getDate()).getTime();
+
+    // Group by date. Colours are assigned over ALL dates in the file (past included),
+    // so a night keeps its colour as the month goes by, like the printed poster.
+    var byDate = {}, allDays = [];
+    shows.forEach(function (s) {
+      if (!byDate[s.date]) {
+        var d = parseDate(s.date);
+        byDate[s.date] = { iso: s.date, d: d, num: d.getDate(), dow: t.dows[d.getDay()], mon: d.getMonth(), diff: Math.round((d.getTime() - t0) / DAY_MS), shows: [] };
+        allDays.push(byDate[s.date]);
+      }
+      byDate[s.date].shows.push({ time: s.time || '', act: s.act, sub: s.sub || '', allAges: !!s.allAges });
+    });
+    allDays.forEach(function (d, i) { d.color = PALETTE[i % PALETTE.length]; });
+    var days = allDays.filter(function (d) { return d.diff >= 0; });
+    var upcoming = []; days.forEach(function (d) { d.shows.forEach(function (s) { upcoming.push({ day: d, show: s }); }); });
+
+    // Month title: the month of the first upcoming night (both months if the list spans two).
+    var months = [];
+    days.forEach(function (d) { if (months.indexOf(d.mon) < 0) months.push(d.mon); });
+    if (!months.length) months = [now.getMonth()];
+    var title = months.slice(0, 2).map(function (m) { return t.months[m]; }).join(' – ');
+    var mt = $('#month-title');
+    mt.innerHTML = '<i>(</i> ' + esc(title) + ' <i>)</i>';
+    mt.className = 'disp month' + (months.length > 1 ? ' two' : '');
+
+    // Stats line
+    var updated = '';
+    if (P.updated) { var u = parseDate(P.updated); updated = ' · ' + t.updated + ' ' + u.getDate() + ' ' + t.monthsShort[u.getMonth()]; }
+    $('#stats').textContent = days.length ? (days.length + ' ' + t.nights + ' · ' + upcoming.length + ' ' + t.acts + updated) : t.empty_stats;
+
+    // Hero card
+    var when = $('#next-when'), act = $('#next-act'), sub = $('#next-sub'), time = $('#next-time');
+    if (days.length) {
+      var f = days[0], fs = f.shows[0];
+      var label = f.diff === 0 ? t.tonight : f.diff === 1 ? t.tomorrow : t.nextup;
+      when.textContent = label + ' · ' + f.dow + ' ' + f.num + ' ' + t.monthsShort[f.mon];
+      act.textContent = fs.act;
+      sub.textContent = fs.sub; sub.hidden = !fs.sub;
+      time.textContent = fs.time ? (t.starts + ' ' + fs.time) : '';
+    } else {
+      when.textContent = t.nextup;
+      act.textContent = t.empty_act;
+      sub.textContent = t.empty_sub; sub.hidden = false;
+      time.textContent = '';
+    }
+
+    // Day list
+    var html = days.map(function (d) {
+      var chip = d.diff === 0 ? '<span class="chip">' + esc(t.tonight) + '</span>' : d.diff === 1 ? '<span class="chip">' + esc(t.tomorrow) + '</span>' : '';
+      var rows = d.shows.map(function (s) {
+        return '<div class="show">' +
+          '<div class="meta"><span class="mono">' + esc(d.dow) + ' <i>|</i> ' + esc(s.time) + '</span>' +
+          (s.allAges ? '<span class="badge">' + esc(t.all_ages) + '</span>' : '') + '</div>' +
+          '<div class="act">' + esc(s.act) + '</div>' +
+          (s.sub ? '<div class="sub">' + esc(s.sub) + '</div>' : '') +
+        '</div>';
+      }).join('');
+      return '<li class="day"><div class="pill" style="background:' + d.color + '"><span>' + d.num + '</span>' + chip + '</div><div class="shows">' + rows + '</div></li>';
+    }).join('');
+    $('#days').innerHTML = html;
+    var old = $('.empty'); if (old) old.parentNode.removeChild(old);
+    if (!days.length) {
+      var e = document.createElement('div'); e.className = 'empty';
+      e.innerHTML = '<div class="act">' + esc(t.empty_act) + '</div><div class="sub" style="margin-top:8px">' + esc(t.empty_sub) + '</div>';
+      $('#days').parentNode.insertBefore(e, $('#days'));
+    }
+
+    // Ticker: the list twice, so the loop is seamless
+    var items = upcoming.map(function (u) { return '<span class="item"><span>' + esc(u.day.dow + ' ' + u.day.num + ' · ' + u.show.act) + '</span><i>★</i></span>'; }).join('');
+    var tick = $('#tick');
+    tick.innerHTML = items + items;
+    tick.style.animationDuration = Math.max(30, upcoming.length * 5) + 's';
+    tick.parentNode.style.display = upcoming.length ? '' : 'none';
+
+    // Structured data for Google: the venue + one Event per upcoming show
+    writeJsonLd(upcoming);
+  }
+
+  function sofiaOffset(d) {
+    try {
+      var s = new Intl.DateTimeFormat('en-US', { timeZone: 'Europe/Sofia', timeZoneName: 'longOffset' }).formatToParts(d)
+        .filter(function (p) { return p.type === 'timeZoneName'; })[0].value; // "GMT+02:00"
+      var m = /([+-]\d\d:\d\d)/.exec(s); return m ? m[1] : '';
+    } catch (e) { return ''; }
+  }
+
+  function writeJsonLd(upcoming) {
+    var old = $('#ld'); if (old) old.parentNode.removeChild(old);
+    var address = { '@type': 'PostalAddress', addressLocality: 'Sofia', addressCountry: 'BG' };
+    if (CONFIG.streetAddress) address.streetAddress = CONFIG.streetAddress;
+    if (CONFIG.postalCode) address.postalCode = CONFIG.postalCode;
+    var geo = { '@type': 'GeoCoordinates', latitude: CONFIG.geo.lat, longitude: CONFIG.geo.lng };
+    var venue = {
+      '@type': 'MusicVenue', '@id': CONFIG.siteUrl + '/#venue', name: CONFIG.venueName, alternateName: CONFIG.venueAltName,
+      url: CONFIG.siteUrl + '/', telephone: CONFIG.phoneTel, address: address, hasMap: CONFIG.mapsUrl, geo: geo,
+      image: CONFIG.siteUrl + '/assets/og.jpg'
+    };
+    var same = []; if (CONFIG.instagram) same.push(CONFIG.instagram); if (CONFIG.facebook) same.push(CONFIG.facebook);
+    if (same.length) venue.sameAs = same;
+    var place = { '@type': 'MusicVenue', name: CONFIG.venueName, address: address, geo: geo, url: CONFIG.siteUrl + '/' };
+    var org = { '@type': 'Organization', name: CONFIG.venueName, url: CONFIG.siteUrl + '/', telephone: CONFIG.phoneTel };
+    var events = upcoming.map(function (u) {
+      var d = u.day.d, hm = (u.show.time || '20:00').split(':');
+      var start = new Date(d.getFullYear(), d.getMonth(), d.getDate(), +hm[0] || 20, +hm[1] || 0);
+      var iso = start.getFullYear() + '-' + pad2(start.getMonth() + 1) + '-' + pad2(start.getDate()) + 'T' + pad2(start.getHours()) + ':' + pad2(start.getMinutes()) + ':00' + sofiaOffset(start);
+      var ev = {
+        '@type': 'MusicEvent', name: u.show.act + (u.show.sub ? ' — ' + u.show.sub : '') + ' live at SWING', startDate: iso,
+        eventStatus: 'https://schema.org/EventScheduled', eventAttendanceMode: 'https://schema.org/OfflineEventAttendanceMode',
+        location: place, organizer: org,
+        performer: { '@type': 'MusicGroup', name: u.show.act }, image: CONFIG.siteUrl + '/assets/og.jpg', url: CONFIG.siteUrl + '/#program'
+      };
+      if (u.show.sub) ev.description = u.show.sub;
+      return ev;
+    });
+    var s = document.createElement('script'); s.type = 'application/ld+json'; s.id = 'ld';
+    s.text = JSON.stringify({ '@context': 'https://schema.org', '@graph': [venue].concat(events) });
+    document.head.appendChild(s);
+  }
+
+  function setLang(l) {
+    lang = l; try { localStorage.setItem('swing-lang', l); } catch (e) {}
+    applyCopy(); safeBuild();
+  }
+  function safeBuild() {
+    try { build(); $('#err').className = 'err'; }
+    catch (e) { var er = $('#err'); er.innerHTML = T[lang].err; er.className = 'err show'; if (window.console) console.error(e); }
+  }
+
+  applyConfig();
+  applyCopy();
+  safeBuild();
+  $$('.lang button').forEach(function (b) { b.addEventListener('click', function () { setLang(b.getAttribute('data-lang')); }); });
+})();
+</script>
+</body>
+</html>
