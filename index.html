@@ -327,11 +327,12 @@ footer .legal{display:flex;flex-wrap:wrap;justify-content:space-between;gap:8px 
   </div>
   <div class="wrap legal mono">
     <span>© <span id="year"></span> SWING · Sofia</span>
-    <span>swingsofia.com · menu.swingsofia.com</span>
+    <span>swingsofia.com · menu.swingsofia.com · <a href="privacy.html" data-i18n="privacy">Privacy</a></span>
   </div>
 </footer>
 
 <script src="program.js"></script>
+<script src="https://swingsofia.com/assets/tracking.js" defer></script>
 <script>
 (function(){
   /* ------------------------------------------------------------
@@ -357,7 +358,7 @@ footer .legal{display:flex;flex-wrap:wrap;justify-content:space-between;gap:8px 
   /* Fixed copy in both languages. The script swaps every [data-i18n] element. */
   var T = {
     en: {
-      skip: 'Skip to the program',
+      skip: 'Skip to the program', privacy: 'Privacy',
       nav_program: 'Program', nav_about: 'About', nav_find: 'Find us ↗', nav_menu: 'Menu ↗',
       tagline: 'The oldest standing jazz & rock stage in town.', tagline_sub: '(still here, folks)',
       btn_program: 'This month\u2019s program ↓', btn_menu: 'The menu ↗',
@@ -380,7 +381,7 @@ footer .legal{display:flex;flex-wrap:wrap;justify-content:space-between;gap:8px 
       dows: ['SUN','MON','TUE','WED','THU','FRI','SAT']
     },
     bg: {
-      skip: 'Към програмата',
+      skip: 'Към програмата', privacy: 'Поверителност',
       nav_program: 'Програма', nav_about: 'За нас', nav_find: 'Намери ни ↗', nav_menu: 'Меню ↗',
       tagline: 'Най-старата действаща джаз и рок сцена в града.', tagline_sub: '(още сме тук, хора)',
       btn_program: 'Програмата за месеца ↓', btn_menu: 'Менюто ↗',
