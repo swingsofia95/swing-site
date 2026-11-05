@@ -5,9 +5,10 @@
    <script src="https://swingsofia.com/assets/tracking.js" defer></script>
 
    What it does once an ID is set:
-   • Shows a small cookie bar (EN/BG). Nothing loads before the visitor taps OK.
-   • On OK: loads the Meta Pixel and/or Google Analytics 4, remembers the choice for 180 days
-     on .swingsofia.com, so one answer covers both sites.
+   • Meta Pixel loads on every visit (metaRequiresConsent: false — Konstantin's decision, 2026-11-06,
+     after the EU consent rules were explained). Set it to true to put the Pixel behind the bar as well.
+   • Google Analytics 4 loads only after the visitor taps OK on the small cookie bar (EN/BG).
+     The choice is remembered for 180 days on .swingsofia.com, so one answer covers both sites.
    • Events: PageView everywhere; ViewContent "Bar menu" on the menu site (that's the
      retargeting audience); Contact when someone taps a phone number; a "menu_click" when
      someone opens the menu from the homepage.
@@ -15,8 +16,9 @@
    ------------------------------------------------------------------------------ */
 (function () {
   var CONFIG = {
-    metaPixelId: '',   // e.g. '1234567890123456'  — Meta Events Manager → Data sources → your pixel → Settings
-    ga4Id: ''          // e.g. 'G-XXXXXXXXXX'      — Google Analytics → Admin → Data streams → Measurement ID
+    metaPixelId: '',            // e.g. '1234567890123456'  — Meta Events Manager → Data sources → your pixel → Settings
+    metaRequiresConsent: false, // false = Pixel fires on load; true = only after OK on the bar
+    ga4Id: ''                   // e.g. 'G-XXXXXXXXXX'      — Google Analytics → Admin → Data streams → Measurement ID
   };
   if (!CONFIG.metaPixelId && !CONFIG.ga4Id) return;
   if (!/^https?:$/.test(location.protocol)) return;
@@ -36,9 +38,17 @@
   var lang = (document.documentElement.lang || '').toLowerCase().indexOf('bg') === 0 ||
              (!document.documentElement.lang && (navigator.language || '').toLowerCase().indexOf('bg') === 0) ? 'bg' : 'en';
   var T = {
-    en: { text: 'We use cookies for analytics and to show you our gigs on Instagram & Facebook.', ok: 'OK', no: 'No thanks', privacy: 'Privacy' },
-    bg: { text: 'Използваме бисквитки за статистика и за да ти показваме концертите ни в Instagram и Facebook.', ok: 'Добре', no: 'Не, благодаря', privacy: 'Поверителност' }
+    en: {
+      both: 'We use cookies for analytics and to show you our gigs on Instagram & Facebook.',
+      gaOnly: 'This site uses the Meta Pixel for our Instagram & Facebook ads. Allow anonymous Google Analytics as well?',
+      ok: 'OK', no: 'No thanks', privacy: 'Privacy' },
+    bg: {
+      both: 'Използваме бисквитки за статистика и за да ти показваме концертите ни в Instagram и Facebook.',
+      gaOnly: 'Сайтът използва Meta Pixel за рекламите ни в Instagram и Facebook. Да включим ли и анонимна статистика с Google Analytics?',
+      ok: 'Добре', no: 'Не, благодаря', privacy: 'Поверителност' }
   };
+  var metaFree = !!CONFIG.metaPixelId && !CONFIG.metaRequiresConsent;   // Pixel runs without the bar
+  var needsBar = !!CONFIG.ga4Id || (!!CONFIG.metaPixelId && CONFIG.metaRequiresConsent);
 
   function loadMeta() {
     if (!CONFIG.metaPixelId) return;
@@ -76,7 +86,9 @@
     }, true);
   }
 
-  function start() { loadMeta(); loadGA(); trackClicks(); }
+  var clicksBound = false;
+  function bindClicks() { if (!clicksBound) { clicksBound = true; trackClicks(); } }
+  function start() { if (!metaFree) loadMeta(); loadGA(); bindClicks(); }
 
   function showBar() {
     var t = T[lang];
@@ -85,7 +97,7 @@
     bar.style.cssText = 'position:fixed;left:0;right:0;bottom:0;z-index:9999;background:#FFFCF1;color:#660033;border-top:3px solid #F63719;' +
       'padding:12px max(16px,env(safe-area-inset-left,0px)) calc(12px + env(safe-area-inset-bottom,0px)) max(16px,env(safe-area-inset-right,0px));' +
       'display:flex;flex-wrap:wrap;align-items:center;justify-content:center;gap:10px 16px;font:500 14px/1.35 "Barlow Condensed","Oswald",Arial,sans-serif;box-shadow:0 -4px 16px rgba(0,0,0,.25)';
-    var txt = document.createElement('span'); txt.textContent = t.text + ' '; txt.style.cssText = 'max-width:52ch;flex:1 1 280px';
+    var txt = document.createElement('span'); txt.textContent = (metaFree ? t.gaOnly : t.both) + ' '; txt.style.cssText = 'max-width:52ch;flex:1 1 280px';
     var pl = document.createElement('a'); pl.href = 'https://swingsofia.com/privacy.html'; pl.textContent = t.privacy; pl.style.cssText = 'color:#660033;text-decoration:underline;text-underline-offset:3px';
     txt.appendChild(pl);
     function btn(label, primary) {
@@ -103,6 +115,8 @@
     document.body.appendChild(bar);
   }
 
+  if (metaFree) { loadMeta(); bindClicks(); }
+  if (!needsBar) return;
   var c = getConsent();
   if (c === 'yes') start();
   else if (c === 'no') return;
