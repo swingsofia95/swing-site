@@ -137,7 +137,7 @@ section{scroll-margin-top:12px}
 @media (min-width:900px){.days{grid-template-columns:1fr 1fr}}
 .day{display:flex;gap:22px;align-items:flex-start}
 .pillwrap{position:relative;flex:0 0 auto}
-.pill{position:relative;width:98px;height:81px;display:flex;align-items:center;justify-content:center;clip-path:url(#blob);-webkit-clip-path:url(#blob);color:var(--fg);font:400 40px/1 var(--poster-wide);letter-spacing:-.04em;text-shadow:0 1px 0 rgba(0,0,0,.12)}
+.pill{position:relative;width:98px;height:81px;display:flex;align-items:center;justify-content:center;clip-path:url(#blob);-webkit-clip-path:url(#blob);color:var(--fg);font:400 40px/1 var(--poster-wide);letter-spacing:-.04em;text-shadow:0 1px 1px rgba(0,0,0,.28)}
 .pill::after{content:"";position:absolute;inset:0;background:url(assets/grain-dark.png) repeat;background-size:140px 140px;opacity:.28;mix-blend-mode:multiply;pointer-events:none}
 .pill span{position:relative}
 .pillwrap .chip{position:absolute;left:50%;bottom:-11px;transform:translateX(-50%) rotate(-3deg);background:var(--fg);color:var(--bg);font:600 10px/1 var(--mono);letter-spacing:.12em;text-transform:uppercase;padding:5px 9px;border-radius:999px;white-space:nowrap;box-shadow:0 2px 0 rgba(0,0,0,.25)}
@@ -200,8 +200,8 @@ footer .legal{display:flex;flex-wrap:wrap;justify-content:space-between;gap:8px 
 <body>
 <a class="skip" href="#program" data-i18n="skip">Skip to the program</a>
 <div class="grain" aria-hidden="true"></div>
-<!-- The date-blob outline, traced from the poster. Used as a clip-path on every day pill. -->
-<svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false"><defs><clipPath id="blob" clipPathUnits="objectBoundingBox"><path d="M.421 .019Q.412 .038 .376 .047Q.339 .055 .281 .085Q.222 .115 .170 .168Q.118 .220 .088 .275Q.059 .330 .045 .387Q.032 .445 .016 .456Q.000 .467 .000 .514Q.000 .560 .016 .571Q.032 .582 .045 .637Q.059 .692 .077 .728Q.095 .764 .149 .821Q.204 .879 .242 .901Q.281 .923 .344 .940Q.407 .956 .416 .975Q.425 .995 .495 .995Q.566 .995 .575 .975Q.584 .956 .638 .942Q.692 .929 .742 .901Q.792 .874 .844 .819Q.896 .764 .921 .712Q.946 .659 .955 .618Q.964 .577 .980 .566Q.995 .555 .995 .505Q.995 .456 .980 .445Q.964 .434 .952 .385Q.941 .335 .921 .291Q.900 .247 .844 .184Q.787 .121 .740 .093Q.692 .066 .640 .052Q.588 .038 .579 .019Q.570 .000 .500 .000Q.430 .000 .421 .019Z"></path></clipPath></defs></svg>
+<!-- The date-blob outline, traced from the poster's own transparent export. Used as a clip-path on every day pill. -->
+<svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false"><defs><clipPath id="blob" clipPathUnits="objectBoundingBox"><path d="M.107 .194Q.068 .247 .048 .289Q.029 .331 .019 .366Q.010 .401 .010 .429Q.010 .456 .005 .461Q.000 .465 .000 .517Q.000 .568 .005 .573Q.010 .577 .014 .622Q.019 .667 .039 .715Q.058 .763 .092 .810Q.126 .858 .169 .892Q.212 .927 .246 .945Q.281 .964 .342 .975Q.402 .987 .406 .993Q.410 .999 .499 .999Q.589 .999 .593 .993Q.596 .987 .619 .987Q.642 .987 .689 .969Q.737 .952 .776 .928Q.815 .904 .849 .875Q.882 .846 .921 .787Q.960 .728 .979 .666Q.999 .603 .999 .511Q.999 .419 .970 .333Q.940 .247 .883 .177Q.825 .106 .776 .076Q.727 .047 .680 .029Q.632 .012 .530 .006Q.429 .000 .425 .006Q.421 .012 .399 .012Q.376 .012 .329 .029Q.281 .047 .213 .094Q.145 .141 .107 .194Z"></path></clipPath></defs></svg>
 
 <header class="wrap top">
   <a class="home" href="#top" id="top" aria-label="SWING — home"><img src="assets/logo-cream.svg" alt="SWING" width="118" height="33"></a>
@@ -404,8 +404,8 @@ footer .legal{display:flex;flex-wrap:wrap;justify-content:space-between;gap:8px 
     }
   };
 
-  // Pill colours sampled from the poster (gold nudged darker so cream digits stay readable).
-  var PALETTE = ['#EA2B0E', '#0859E4', '#B38A00', '#538C03', '#70038C', '#803F04'];
+  // Pill colours exactly as in the poster's Figma file (SWING - SOCIAL kit).
+  var PALETTE = ['#F63719', '#196AF6', '#D9AE00', '#649D12', '#81129D', '#904F12'];
   var DAY_MS = 86400000;
 
   var esc = function (s) { return String(s == null ? '' : s).replace(/[&<>"]/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]; }); };
