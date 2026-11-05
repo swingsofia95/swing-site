@@ -15,7 +15,7 @@
    ------------------------------------------------------------------------------ */
 (function () {
   var CONFIG = {
-    metaPixelId: '',   // e.g. '1234567890123456'  — Meta Events Manager → Data sources → your pixel → Settings
+    metaPixelId: '2666180403597236',   // SWING website pixel  — Meta Events Manager → Data sources → your pixel → Settings
     ga4Id: ''          // e.g. 'G-XXXXXXXXXX'      — Google Analytics → Admin → Data streams → Measurement ID
   };
   // Per-site behaviour (owner's decision, 2026-11-06).
