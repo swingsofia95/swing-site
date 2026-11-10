@@ -262,7 +262,7 @@ footer a{text-decoration:none}
     } catch (e) {}
   }
 
-  function showError(key) { var t = T[lang], el = $('#err'); el.textContent = t['e_' + key] || t.e_delivery; el.className = 'err show'; el.scrollIntoView({ block: 'center', behavior: 'smooth' }); }
+  function showError(key, detail) { var t = T[lang], el = $('#err'); el.textContent = (t['e_' + key] || t.e_delivery) + (detail ? ' (' + detail + ')' : ''); el.className = 'err show'; el.scrollIntoView({ block: 'center', behavior: 'smooth' }); }
   function clearError() { $('#err').className = 'err'; $$('[aria-invalid]').forEach(function (el) { el.removeAttribute('aria-invalid'); }); }
   function invalid(id, key) { var el = $('#' + id); el.setAttribute('aria-invalid', 'true'); showError(key); el.focus(); return false; }
 
@@ -278,7 +278,7 @@ footer a{text-decoration:none}
     var guests = $('#guests').value; if (!(+guests >= 1 && +guests <= 20)) return invalid('guests', 'guests');
     var phone = $('#phone').value.trim(); if (!/^[+\d][\d\s().-]{5,}$/.test(phone)) return invalid('phone', 'phone');
     var email = $('#email').value.trim(); if (email && !/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(email)) return invalid('email', 'email');
-    return { night: night, time: time, act: act, label: lbl, name: name, guests: +guests, phone: phone, email: email, requests: $('#requests').value.trim(), website: $('#website').value, t: +$('#t').value, lang: lang };
+    return { night: night, time: time, act: act, label: lbl, name: name, guests: +guests, phone: phone, email: email, requests: $('#requests').value.trim(), website: $('#website').value, t: +$('#t').value, elapsed: Date.now() - +$('#t').value, lang: lang };
   }
 
   function done(data, ref) {
@@ -297,13 +297,14 @@ footer a{text-decoration:none}
     var btn = $('#submit'); btn.disabled = true; btn.textContent = T[lang].sending;
     // The server ignores forms filled in under 3 seconds (bots). A fast human just waits the remainder.
     var wait = Math.max(0, 3200 - (Date.now() - data.t));
-    new Promise(function (ok) { setTimeout(ok, wait); }).then(function () { data.t = +$('#t').value; return fetch('/api/reserve', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(data) })
+    new Promise(function (ok) { setTimeout(ok, wait); }).then(function () { data.elapsed = Date.now() - +$('#t').value; return fetch('/api/reserve', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(data) })
       .then(function (r) { return r.json().then(function (j) { return { status: r.status, body: j }; }); })
       .then(function (res) {
         if (res.body && res.body.ok) return done(data, res.body.ref || '');
-        showError(res.body && res.body.error === 'rate' ? 'rate' : (res.status >= 500 ? 'delivery' : (res.body && res.body.error) || 'delivery'));
+        var code = (res.body && res.body.error) || ('http ' + res.status);
+        showError(code === 'rate' ? 'rate' : (res.status >= 500 ? 'delivery' : code), code);
       })
-      .catch(function () { showError('net'); })
+      .catch(function (e) { showError('net', e && e.message ? e.message.slice(0, 60) : ''); })
       .then(function () { btn.disabled = false; btn.textContent = T[lang].submit; }); });
   });
   $('#night').addEventListener('change', onNight);

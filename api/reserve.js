@@ -169,9 +169,10 @@ module.exports = async (req, res) => {
   if (!body || typeof body !== 'object') return res.status(400).json({ ok: false, error: 'body' });
 
   // Bots: a hidden field that humans never fill, and a form that was submitted in under 3 seconds.
+  // The page measures its own elapsed time, so a visitor's wrong clock can't trip this.
   if (body.website) return res.status(200).json({ ok: true, ref: ref() });
-  const age = Date.now() - Number(body.t || 0);
-  if (!(age > 3000 && age < 24 * 3600 * 1000)) return res.status(400).json({ ok: false, error: 'timing' });
+  const elapsed = Number(body.elapsed);
+  if (!(elapsed >= 3000 && elapsed < 24 * 3600 * 1000)) return res.status(400).json({ ok: false, error: 'timing' });
 
   const ip = (req.headers['x-forwarded-for'] || '').split(',')[0].trim() || 'unknown';
   if (limited(ip)) return res.status(429).json({ ok: false, error: 'rate' });
@@ -189,8 +190,9 @@ module.exports = async (req, res) => {
   const done = (await Promise.all(jobs)).filter(Boolean);
 
   if (!done.some(d => d.indexOf('sheet') === 0) && !done.includes('email') && !done.includes('discord')) {
-    console.error('reservation NOT delivered', id, JSON.stringify(r));
-    return res.status(502).json({ ok: false, error: 'delivery' });
+    const configured = { resend: !!process.env.RESEND_API_KEY, discord: !!process.env.DISCORD_WEBHOOK_URL, sheet: !!(process.env.SHEET_WEBHOOK_URL && process.env.SHEET_SECRET) };
+    console.error('reservation NOT delivered', id, 'configured:', JSON.stringify(configured), JSON.stringify(r));
+    return res.status(502).json({ ok: false, error: 'delivery', configured });
   }
   console.log('reservation', id, done.join('+'), r.label, r.guests, r.name);
   return res.status(200).json({ ok: true, ref: id, via: done });
