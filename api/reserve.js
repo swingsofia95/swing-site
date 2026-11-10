@@ -1,16 +1,21 @@
 // SWING — table reservations: POST /api/reserve
 // ------------------------------------------------------------
 // Runs on Vercel as a serverless function. The form on /reserve posts here; this
-// validates the request, emails the venue (and the guest, if they left an email)
-// through Resend, and posts the booking to a Discord channel through a webhook.
+// validates the request and hands the booking to up to three places, in parallel:
+//   • the Google Sheet script (sheets/Code.gs) — adds a row, emails the venue and the
+//     guest from the swing.sofia95 Gmail, and feeds the 2-hours-before Discord digest
+//   • a Discord webhook — one card per booking, the moment it arrives
+//   • Resend — optional, only if you want emails sent from reservations@swingsofia.com
+//     instead of the Gmail account (then set CONFIG.sendEmail = false in the sheet script)
 //
 // Settings live in Vercel → Project → Settings → Environment Variables:
-//   RESEND_API_KEY        from resend.com (needed for email)
-//   RESERVATIONS_TO       where bookings go           default: swing.sofia95@gmail.com
-//   RESERVATIONS_FROM     the sender                  default: SWING <reservations@swingsofia.com>
-//                         (the domain must be verified in Resend, see the guide)
-//   DISCORD_WEBHOOK_URL   from Discord → channel → Integrations → Webhooks (needed for Discord)
-// A booking counts as received when at least one of email / Discord went through.
+//   SHEET_WEBHOOK_URL     the Apps Script "Web app" URL (see the guide)
+//   SHEET_SECRET          the same secret as CONFIG.secret in the script
+//   DISCORD_WEBHOOK_URL   from Discord → channel → Integrations → Webhooks
+//   RESEND_API_KEY        optional, from resend.com
+//   RESERVATIONS_TO       optional, default swing.sofia95@gmail.com (Resend only)
+//   RESERVATIONS_FROM     optional, default SWING <reservations@swingsofia.com> (Resend only)
+// A booking counts as received when at least one of sheet / email / Discord went through.
 // ------------------------------------------------------------
 
 const TO = process.env.RESERVATIONS_TO || 'swing.sofia95@gmail.com';
@@ -107,9 +112,22 @@ function guestEmail(r, id) {
   return { from: FROM, to: [r.email], subject, text, html };
 }
 
+async function logToSheet(r, id) {
+  const url = process.env.SHEET_WEBHOOK_URL, secret = process.env.SHEET_SECRET;
+  if (!url || !secret) return null;                       // not configured: skip quietly
+  const res = await fetch(url, {
+    method: 'POST', redirect: 'follow', headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ secret, reservation: Object.assign({}, r, { ref: id, source: 'web' }) })
+  });
+  const text = await res.text();
+  let j = null; try { j = JSON.parse(text); } catch (e) {}
+  if (!res.ok || !j || !j.ok) throw new Error('sheet ' + res.status + ': ' + text.slice(0, 200));
+  return j;                                               // { ok, sheet, email, guest }
+}
+
 async function sendResend(msg) {
   const key = process.env.RESEND_API_KEY;
-  if (!key) throw new Error('RESEND_API_KEY not set');
+  if (!key) return null;                                  // not configured: skip quietly
   const res = await fetch('https://api.resend.com/emails', {
     method: 'POST', headers: { Authorization: 'Bearer ' + key, 'Content-Type': 'application/json' }, body: JSON.stringify(msg)
   });
@@ -119,7 +137,7 @@ async function sendResend(msg) {
 
 async function sendDiscord(r, id) {
   const url = process.env.DISCORD_WEBHOOK_URL;
-  if (!url) throw new Error('DISCORD_WEBHOOK_URL not set');
+  if (!url) return null;                                  // not configured: skip quietly
   const body = {
     username: 'SWING reservations',
     content: '🎷 **New reservation** — ' + r.label + ' — **' + r.guests + '** guests',
@@ -163,13 +181,14 @@ module.exports = async (req, res) => {
   const r = v.data, id = ref();
 
   const jobs = [
-    sendResend(venueEmail(r, id)).then(() => 'email').catch(e => { console.error('email failed:', e.message); return null; }),
-    sendDiscord(r, id).then(() => 'discord').catch(e => { console.error('discord failed:', e.message); return null; })
+    logToSheet(r, id).then(j => j ? 'sheet' + (j.email ? '+gmail' : '') : null).catch(e => { console.error('sheet failed:', e.message); return null; }),
+    sendResend(venueEmail(r, id)).then(x => x ? 'email' : null).catch(e => { console.error('email failed:', e.message); return null; }),
+    sendDiscord(r, id).then(x => x === null ? null : 'discord').catch(e => { console.error('discord failed:', e.message); return null; })
   ];
-  if (r.email) jobs.push(sendResend(guestEmail(r, id)).then(() => 'guest').catch(e => { console.error('guest email failed:', e.message); return null; }));
+  if (r.email) jobs.push(sendResend(guestEmail(r, id)).then(x => x ? 'guest' : null).catch(e => { console.error('guest email failed:', e.message); return null; }));
   const done = (await Promise.all(jobs)).filter(Boolean);
 
-  if (!done.includes('email') && !done.includes('discord')) {
+  if (!done.some(d => d.indexOf('sheet') === 0) && !done.includes('email') && !done.includes('discord')) {
     console.error('reservation NOT delivered', id, JSON.stringify(r));
     return res.status(502).json({ ok: false, error: 'delivery' });
   }
