@@ -241,6 +241,15 @@ footer a{text-decoration:none}
     od.hidden = !other;
     if (other) { var n = new Date(); od.min = n.getFullYear() + '-' + pad2(n.getMonth() + 1) + '-' + pad2(n.getDate()); }
   }
+  // Keep the address bar in step with the dropdown, so the URL can be copied straight into an ad.
+  function syncUrl() {
+    try {
+      var v = $('#night').value, u = new URL(location.href);
+      u.searchParams.delete('night'); u.searchParams.delete('time');
+      if (v && v !== 'other') { var p = v.split('|'); u.searchParams.set('night', p[0]); if (p[1]) u.searchParams.set('time', p[1]); }
+      history.replaceState(null, '', u.pathname + u.search);
+    } catch (e) {}
+  }
 
   function applyCopy() {
     var t = T[lang];
@@ -307,7 +316,7 @@ footer a{text-decoration:none}
       .catch(function (e) { showError('net', e && e.message ? e.message.slice(0, 60) : ''); })
       .then(function () { btn.disabled = false; btn.textContent = T[lang].submit; }); });
   });
-  $('#night').addEventListener('change', onNight);
+  $('#night').addEventListener('change', function () { onNight(); syncUrl(); });
   $$('.lang button').forEach(function (b) { b.addEventListener('click', function () { setLang(b.getAttribute('data-lang')); }); });
 
   $('#t').value = String(Date.now());
