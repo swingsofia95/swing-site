@@ -115,10 +115,17 @@ function guestEmail(r, id) {
 async function logToSheet(r, id) {
   const url = process.env.SHEET_WEBHOOK_URL, secret = process.env.SHEET_SECRET;
   if (!url || !secret) return null;                       // not configured: skip quietly
-  const res = await fetch(url, {
-    method: 'POST', redirect: 'follow', headers: { 'Content-Type': 'application/json' },
+  // Apps Script answers a POST with a 302 to a second Google host that only accepts GET.
+  // Follow that redirect by hand as a GET (some runtimes re-send the POST and get a 405).
+  let res = await fetch(url, {
+    method: 'POST', redirect: 'manual', headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ secret, reservation: Object.assign({}, r, { ref: id, source: 'web' }) })
   });
+  for (let hops = 0; hops < 3 && res.status >= 300 && res.status < 400; hops++) {
+    const loc = res.headers.get('location');
+    if (!loc) break;
+    res = await fetch(new URL(loc, url).href, { method: 'GET', redirect: 'manual' });
+  }
   const text = await res.text();
   let j = null; try { j = JSON.parse(text); } catch (e) {}
   if (!res.ok || !j || !j.ok) throw new Error('sheet ' + res.status + ': ' + text.slice(0, 200));
