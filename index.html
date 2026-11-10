@@ -85,6 +85,9 @@ section{scroll-margin-top:12px}
 .top nav{display:flex;align-items:center;gap:0 26px;flex-wrap:wrap}
 .navlink{text-decoration:none;color:inherit;padding:14px 0;display:inline-block}
 .navlink.chip{border:1.5px solid rgba(255,252,241,.45);border-radius:999px;padding:13px 16px}
+.navlink.chip-fill{background:var(--fg);color:var(--bg);border-color:var(--fg)}
+.navlink.chip-fill:hover{background:var(--accent);color:var(--fg);border-color:var(--accent);text-decoration:none}
+@media (max-width:560px){.top nav{gap:0 14px}.navlink.chip{padding:11px 13px}.lang button{padding:11px 10px}}
 .lang{display:inline-flex;border:1.5px solid rgba(255,252,241,.25);border-radius:999px;overflow:hidden}
 .lang button{appearance:none;border:0;background:transparent;color:var(--fg);font:500 12px/1.4 var(--mono);letter-spacing:.14em;text-transform:uppercase;padding:13px 12px;cursor:pointer}
 .lang button[aria-pressed="true"]{background:var(--fg);color:var(--bg)}
@@ -210,6 +213,7 @@ footer .legal{display:flex;flex-wrap:wrap;justify-content:space-between;gap:8px 
     <a class="navlink" href="#about" data-i18n="nav_about">About</a>
     <a class="navlink" href="#" data-maps data-i18n="nav_find">Find us ↗</a>
     <a class="navlink chip" href="https://menu.swingsofia.com" data-menu data-i18n="nav_menu">Menu ↗</a>
+    <a class="navlink chip chip-fill" href="/reserve" data-i18n="nav_reserve">Book a table</a>
     <span class="lang" role="group" aria-label="Language">
       <button type="button" data-lang="en" aria-pressed="true" lang="en">EN</button>
       <button type="button" data-lang="bg" aria-pressed="false" lang="bg">БГ</button>
@@ -291,10 +295,8 @@ footer .legal{display:flex;flex-wrap:wrap;justify-content:space-between;gap:8px 
     <div class="wrap">
       <div>
         <h2 class="disp" data-i18n="c1_h">Make a reservation.</h2>
-        <p class="sub" data-i18n="c1_p">Book online in a minute, or call and we'll keep you a table.</p>
+        <p class="sub" data-i18n="c1_p">Book online in a minute. Pick the night, say how many of you, done.</p>
         <p style="margin:16px 0 0"><a class="btn btn-cream" href="/reserve" data-i18n="book_online">Book online</a></p>
-        <a class="tel" href="#" data-tel data-phone></a>
-        <a class="mail" href="#" data-mail></a>
       </div>
       <div>
         <h2 class="disp" data-i18n="c2_h">Book the place.</h2>
@@ -324,6 +326,7 @@ footer .legal{display:flex;flex-wrap:wrap;justify-content:space-between;gap:8px 
       <a class="navlink" href="#about" data-i18n="nav_about">About</a>
       <a class="navlink" href="#" data-maps data-i18n="nav_find">Find us ↗</a>
       <a class="navlink" href="https://menu.swingsofia.com" data-menu data-i18n="nav_menu">Menu ↗</a>
+      <a class="navlink" href="/reserve" data-i18n="nav_reserve">Book a table</a>
       <a class="navlink" href="#" data-social="instagram" hidden>Instagram ↗</a>
       <a class="navlink" href="#" data-social="facebook" hidden>Facebook ↗</a>
       <a class="navlink" href="#" data-tel data-phone></a>
@@ -364,7 +367,7 @@ footer .legal{display:flex;flex-wrap:wrap;justify-content:space-between;gap:8px 
   var T = {
     en: {
       skip: 'Skip to the program', privacy: 'Privacy',
-      nav_program: 'Program', nav_about: 'About', nav_find: 'Find us ↗', nav_menu: 'Menu ↗',
+      nav_program: 'Program', nav_about: 'About', nav_find: 'Find us ↗', nav_menu: 'Menu ↗', nav_reserve: 'Book a table',
       tagline: 'The oldest standing jazz & rock stage in town.', tagline_sub: '(still here, folks)',
       btn_program: 'This month\u2019s program ↓', btn_menu: 'The menu ↗',
       tonight: 'Tonight', tomorrow: 'Tomorrow', nextup: 'Next up', starts: 'Starts', full_program: 'Full program ↓',
@@ -376,7 +379,7 @@ footer .legal{display:flex;flex-wrap:wrap;justify-content:space-between;gap:8px 
       about_p2: 'Jazz, rock, grunge, the occasional acoustic one-man show. Name a famous Bulgarian band or musician - chances are their path started on this stage.',
       about_p3: 'Come for the gig. Stay for the bar. No apologies.',
       find_us: 'Find us ↗', photo_soon: 'Stage photo coming soon',
-      c1_h: 'Make a reservation.', c1_p: 'Book online in a minute, or call and we\u2019ll keep you a table.',
+      c1_h: 'Make a reservation.', c1_p: 'Book online in a minute. Pick the night, say how many of you, done.',
       c2_h: 'Book the place.', c2_p: 'Private parties, company nights, birthdays with a band. The stage comes with the room.',
       c3_h: 'Play here.', c3_p: 'Bands and solo acts: call us about a slot. We listen to everything. Eventually.',
       empty_act: 'New program coming soon', empty_sub: 'Watch this space — or call.', empty_stats: 'Next month\u2019s program coming soon',
@@ -387,7 +390,7 @@ footer .legal{display:flex;flex-wrap:wrap;justify-content:space-between;gap:8px 
     },
     bg: {
       skip: 'Към програмата', privacy: 'Поверителност',
-      nav_program: 'Програма', nav_about: 'За нас', nav_find: 'Намери ни ↗', nav_menu: 'Меню ↗',
+      nav_program: 'Програма', nav_about: 'За нас', nav_find: 'Намери ни ↗', nav_menu: 'Меню ↗', nav_reserve: 'Запази маса',
       tagline: 'Най-старата действаща джаз и рок сцена в града.', tagline_sub: '(още сме тук, хора)',
       btn_program: 'Програмата за месеца ↓', btn_menu: 'Менюто ↗',
       tonight: 'Тази вечер', tomorrow: 'Утре', nextup: 'Следва', starts: 'Начало', full_program: 'Цялата програма ↓',
@@ -399,7 +402,7 @@ footer .legal{display:flex;flex-wrap:wrap;justify-content:space-between;gap:8px 
       about_p2: 'Джаз, рок, грънж, от време на време акустично шоу на един човек. Сети се за известна българска група или музикант - вероятно пътят им е започнал от тази сцена.',
       about_p3: 'Ела за концерта. Остани за бара. Без извинения.',
       find_us: 'Намери ни ↗', photo_soon: 'Снимка от сцената — скоро',
-      c1_h: 'Резервирай маса.', c1_p: 'Резервирай онлайн за минута или се обади и ще ти пазим маса.',
+      c1_h: 'Резервирай маса.', c1_p: 'Резервирай онлайн за минута. Избери вечерта, кажи колко сте, готово.',
       c2_h: 'Наеми мястото.', c2_p: 'Частни партита, фирмени вечери, рождени дни с група. Сцената върви с помещението.',
       c3_h: 'Свири тук.', c3_p: 'Групи и солови изпълнители: обади се за дата. Слушаме всичко. Рано или късно.',
       empty_act: 'Новата програма идва скоро', empty_sub: 'Следи тук — или се обади.', empty_stats: 'Програмата за следващия месец идва скоро',

@@ -9,14 +9,18 @@
    3. Every 10 minutes checks the program on swingsofia.com and, 2 hours before each
       show, posts that show's reservations to the Discord channel.
 
+   Works either bound to the sheet (Extensions → Apps Script) or as a standalone project made at
+   script.google.com — for the standalone case put the sheet's id in CONFIG.sheetId.
+
    SETUP (once):
-   • Fill CONFIG below (webhook URL, a long secret of your choosing).
+   • Fill CONFIG below (webhook URL, a long secret of your choosing, sheetId if standalone).
    • Run setup() from the editor (▶) and allow the permissions it asks for.
    • Deploy → New deployment → type Web app → Execute as: Me → Who has access: Anyone
      → copy the Web app URL into Vercel as SHEET_WEBHOOK_URL (and the secret as SHEET_SECRET).
    ------------------------------------------------------------ */
 
 const CONFIG = {
+  sheetId: '',                                 // only for a standalone script (script.google.com): the long id in the sheet's URL
   discordWebhookUrl: '',                       // Discord → channel → Integrations → Webhooks → copy URL
   secret: 'change-me-to-a-long-random-phrase', // same value goes into Vercel as SHEET_SECRET
   siteUrl: 'https://swingsofia.com',
@@ -133,9 +137,11 @@ function fmt(d, pattern) { return Utilities.formatDate(d, TZ, pattern); }
 function parseDate(iso) { const p = String(iso).split('-'); return new Date(Number(p[0]), Number(p[1]) - 1, Number(p[2]), 12, 0, 0); }
 function toMin(hhmm) { const p = String(hhmm).split(':'); return Number(p[0]) * 60 + Number(p[1] || 0); }
 
+function book() { return CONFIG.sheetId ? SpreadsheetApp.openById(CONFIG.sheetId) : SpreadsheetApp.getActiveSpreadsheet(); }
+
 function monthSheet(night) {
   const name = String(night).slice(0, 7);                           // "2026-11"
-  const ss = SpreadsheetApp.getActiveSpreadsheet();
+  const ss = book();
   let sh = ss.getSheetByName(name);
   if (sh) return sh;
   sh = ss.insertSheet(name, 0);
@@ -151,7 +157,7 @@ function monthSheet(night) {
 }
 
 function rowsFor(date) {
-  const ss = SpreadsheetApp.getActiveSpreadsheet();
+  const ss = book();
   const sh = ss.getSheetByName(String(date).slice(0, 7));
   if (!sh || sh.getLastRow() < 2) return [];
   const values = sh.getRange(2, 1, sh.getLastRow() - 1, HEADERS.length).getValues();
