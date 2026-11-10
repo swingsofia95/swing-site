@@ -227,6 +227,7 @@ footer .legal{display:flex;flex-wrap:wrap;justify-content:space-between;gap:8px 
       <div class="ctas">
         <a class="btn btn-cream" href="#program" data-i18n="btn_program">This month's program ↓</a>
         <a class="btn btn-line" href="https://menu.swingsofia.com" data-menu data-i18n="btn_menu">The menu ↗</a>
+        <a class="btn btn-line" href="/reserve" data-i18n="btn_reserve">Book a table</a>
       </div>
     </div>
     <aside class="next" aria-label="Next show">
@@ -257,8 +258,11 @@ footer .legal{display:flex;flex-wrap:wrap;justify-content:space-between;gap:8px 
       <div class="err" id="err" role="alert"></div>
       <ol class="days" id="days"></ol>
       <div class="prog-foot">
-        <p class="sub" data-i18n="program_note">Program changes show up here first. Tables go fast on weekends — call ahead.</p>
-        <a class="btn btn-line" href="#" data-tel><span data-i18n="reserve">Reserve a table</span>&nbsp;· <span data-phone></span></a>
+        <p class="sub" data-i18n="program_note">Program changes show up here first. Tables go fast on weekends — book ahead.</p>
+        <div style="display:flex;flex-wrap:wrap;align-items:center;gap:10px 18px">
+          <a class="btn btn-cream" href="/reserve" data-i18n="reserve">Reserve a table</a>
+          <a class="mono" href="#" data-tel style="text-decoration:none;color:var(--fg-soft)"><span data-i18n="or_call">or call</span> <span data-phone></span></a>
+        </div>
       </div>
     </div>
   </section>
@@ -287,7 +291,8 @@ footer .legal{display:flex;flex-wrap:wrap;justify-content:space-between;gap:8px 
     <div class="wrap">
       <div>
         <h2 class="disp" data-i18n="c1_h">Make a reservation.</h2>
-        <p class="sub" data-i18n="c1_p">Call and we'll keep you a table. Say the night and how many of you.</p>
+        <p class="sub" data-i18n="c1_p">Book online in a minute, or call and we'll keep you a table.</p>
+        <p style="margin:16px 0 0"><a class="btn btn-cream" href="/reserve" data-i18n="book_online">Book online</a></p>
         <a class="tel" href="#" data-tel data-phone></a>
         <a class="mail" href="#" data-mail></a>
       </div>
@@ -364,14 +369,14 @@ footer .legal{display:flex;flex-wrap:wrap;justify-content:space-between;gap:8px 
       btn_program: 'This month\u2019s program ↓', btn_menu: 'The menu ↗',
       tonight: 'Tonight', tomorrow: 'Tomorrow', nextup: 'Next up', starts: 'Starts', full_program: 'Full program ↓',
       live: 'Live', nights: 'nights', acts: 'acts', updated: 'updated', all_ages: 'All ages',
-      program_note: 'Program changes show up here first. Tables go fast on weekends — call ahead.',
-      reserve: 'Reserve a table',
+      program_note: 'Program changes show up here first. Tables go fast on weekends — book ahead.',
+      reserve: 'Reserve a table', or_call: 'or call', btn_reserve: 'Book a table', book_online: 'Book online',
       about_eyebrow: 'Est. 1995 · Sofia', about_h: 'Still here, folks.',
       about_p1: 'Swingin’ Hall opened in 1995 and has been loud ever since - the oldest standing jazz & rock stage in town. These days it goes by SWING: a new, modern look, the same punk soul.',
       about_p2: 'Jazz, rock, grunge, the occasional acoustic one-man show. Name a famous Bulgarian band or musician - chances are their path started on this stage.',
       about_p3: 'Come for the gig. Stay for the bar. No apologies.',
       find_us: 'Find us ↗', photo_soon: 'Stage photo coming soon',
-      c1_h: 'Make a reservation.', c1_p: 'Call and we\u2019ll keep you a table. Say the night and how many of you.',
+      c1_h: 'Make a reservation.', c1_p: 'Book online in a minute, or call and we\u2019ll keep you a table.',
       c2_h: 'Book the place.', c2_p: 'Private parties, company nights, birthdays with a band. The stage comes with the room.',
       c3_h: 'Play here.', c3_p: 'Bands and solo acts: call us about a slot. We listen to everything. Eventually.',
       empty_act: 'New program coming soon', empty_sub: 'Watch this space — or call.', empty_stats: 'Next month\u2019s program coming soon',
@@ -387,14 +392,14 @@ footer .legal{display:flex;flex-wrap:wrap;justify-content:space-between;gap:8px 
       btn_program: 'Програмата за месеца ↓', btn_menu: 'Менюто ↗',
       tonight: 'Тази вечер', tomorrow: 'Утре', nextup: 'Следва', starts: 'Начало', full_program: 'Цялата програма ↓',
       live: 'Live', nights: 'вечери', acts: 'изпълнения', updated: 'обновено', all_ages: 'Всички възрасти',
-      program_note: 'Промените в програмата се появяват първо тук. В уикенда масите свършват бързо — обади се предварително.',
-      reserve: 'Резервирай маса',
+      program_note: 'Промените в програмата се появяват първо тук. В уикенда масите свършват бързо — резервирай предварително.',
+      reserve: 'Резервирай маса', or_call: 'или се обади', btn_reserve: 'Запази маса', book_online: 'Резервирай онлайн',
       about_eyebrow: 'Осн. 1995 · София', about_h: 'Още сме тук, хора.',
       about_p1: 'Swingin’ Hall отваря врати през 1995 г. и оттогава не е утихвал - най-старата действаща джаз и рок сцена в града. Напоследък се казва SWING: нов, модерен облик, същата пънк душа.',
       about_p2: 'Джаз, рок, грънж, от време на време акустично шоу на един човек. Сети се за известна българска група или музикант - вероятно пътят им е започнал от тази сцена.',
       about_p3: 'Ела за концерта. Остани за бара. Без извинения.',
       find_us: 'Намери ни ↗', photo_soon: 'Снимка от сцената — скоро',
-      c1_h: 'Резервирай маса.', c1_p: 'Обади се и ще ти пазим маса. Кажи вечерта и колко сте.',
+      c1_h: 'Резервирай маса.', c1_p: 'Резервирай онлайн за минута или се обади и ще ти пазим маса.',
       c2_h: 'Наеми мястото.', c2_p: 'Частни партита, фирмени вечери, рождени дни с група. Сцената върви с помещението.',
       c3_h: 'Свири тук.', c3_p: 'Групи и солови изпълнители: обади се за дата. Слушаме всичко. Рано или късно.',
       empty_act: 'Новата програма идва скоро', empty_sub: 'Следи тук — или се обади.', empty_stats: 'Програмата за следващия месец идва скоро',

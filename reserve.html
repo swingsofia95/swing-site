@@ -1,0 +1,320 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Reserve a table — SWING</title>
+<meta name="description" content="Book a table at SWING for a night on the program. Pick the gig, say how many, done.">
+<link rel="canonical" href="https://swingsofia.com/reserve">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="SWING">
+<meta property="og:title" content="Reserve a table at SWING">
+<meta property="og:description" content="Pick the night, tell us how many. The oldest standing jazz & rock stage in town.">
+<meta property="og:url" content="https://swingsofia.com/reserve">
+<meta property="og:image" content="https://swingsofia.com/assets/og.jpg">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="theme-color" content="#660033">
+<link rel="icon" href="assets/icon-180.png" type="image/png">
+<link rel="apple-touch-icon" href="assets/icon-180.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600;700&family=Fraunces:ital,opsz,wght,SOFT,WONK@0,9..144,400..900,0..100,0..1;1,9..144,400..900,0..100,0..1&family=IBM+Plex+Mono:wght@500;600&family=Playfair+Display:ital,wght@1,900&display=swap">
+<style>
+:root{--bg:#660033;--bg-deep:#4D0026;--fg:#FFFCF1;--accent:#F63719;--accent-ink:#D92D0C;--ink:#1F000F;--mute:rgba(255,252,241,.66);--rule:rgba(102,0,51,.18);
+  --display:'Fraunces','Playfair Display',Georgia,serif;--body:'Barlow Condensed','Oswald','Arial Narrow',sans-serif;--mono:'IBM Plex Mono',ui-monospace,Menlo,monospace;color-scheme:dark}
+*{box-sizing:border-box}
+html,body{margin:0}
+body{background:var(--bg);color:var(--fg);font-family:var(--body);font-size:18px;line-height:1.3;min-height:100%;position:relative;overflow-x:clip}
+[hidden]{display:none!important}
+a{color:inherit}
+:focus-visible{outline:2px solid var(--accent);outline-offset:3px}
+.grain{position:fixed;inset:0;background:url(assets/grain-dark.png) repeat;background-size:240px 240px;opacity:.07;pointer-events:none;z-index:0}
+.wrap{position:relative;z-index:1;max-width:680px;margin:0 auto;padding:0 max(20px,env(safe-area-inset-left,0px)) 80px max(20px,env(safe-area-inset-right,0px))}
+.mono{font:500 12px/1.4 var(--mono);letter-spacing:.14em;text-transform:uppercase}
+.top{display:flex;align-items:center;justify-content:space-between;gap:16px;padding:calc(18px + env(safe-area-inset-top,0px)) 0 10px}
+.top img{width:104px;height:auto;display:block}
+.top nav{display:flex;align-items:center;gap:18px}
+.navlink{text-decoration:none;padding:12px 0;display:inline-block}
+.lang{display:inline-flex;border:1.5px solid rgba(255,252,241,.25);border-radius:999px;overflow:hidden}
+.lang button{appearance:none;border:0;background:transparent;color:var(--fg);font:500 12px/1.4 var(--mono);letter-spacing:.14em;text-transform:uppercase;padding:11px 12px;cursor:pointer}
+.lang button[aria-pressed="true"]{background:var(--fg);color:var(--bg)}
+h1{font:900 clamp(42px,9vw,64px)/.98 var(--display);font-style:italic;font-variation-settings:'SOFT' 100,'WONK' 1,'opsz' 144;letter-spacing:-.01em;margin:28px 0 10px}
+.lead{margin:0 0 28px;font:italic 400 20px/1.35 var(--display);font-variation-settings:'SOFT' 100,'WONK' 1,'opsz' 18;color:var(--mute);max-width:40ch}
+.card{background:var(--fg);color:var(--bg);padding:28px 24px 24px;box-shadow:8px 10px 0 rgba(0,0,0,.28);position:relative}
+@media (min-width:600px){.card{padding:36px 36px 32px}}
+.card .star{position:absolute;right:-18px;top:-22px;width:76px;height:auto;transform:rotate(12deg)}
+@media (max-width:480px){.card .star{right:-6px;top:-20px;width:64px}}
+.field{display:flex;flex-direction:column;gap:6px;margin-bottom:18px}
+.row{display:grid;grid-template-columns:1fr;gap:0 18px}
+@media (min-width:600px){.row{grid-template-columns:1fr 1fr}}
+label{font:600 12px/1.4 var(--mono);letter-spacing:.14em;text-transform:uppercase;color:rgba(102,0,51,.78)}
+label i{font-style:normal;color:var(--accent-ink)}
+input,select,textarea{appearance:none;-webkit-appearance:none;width:100%;background:#fff;color:var(--ink);border:2px solid rgba(102,0,51,.28);border-radius:6px;padding:12px 14px;font:500 19px/1.25 var(--body);min-height:50px}
+select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='10' viewBox='0 0 16 10'%3E%3Cpath d='M1 1l7 7 7-7' fill='none' stroke='%23660033' stroke-width='2.5'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 14px center;padding-right:40px}
+textarea{min-height:96px;resize:vertical}
+input:focus,select:focus,textarea:focus{outline:none;border-color:var(--bg);box-shadow:0 0 0 3px rgba(246,55,25,.25)}
+input[aria-invalid="true"],select[aria-invalid="true"]{border-color:var(--accent-ink)}
+.hint{font:italic 400 14px/1.3 var(--display);color:rgba(102,0,51,.7)}
+.err{display:none;margin:0 0 16px;padding:12px 14px;border:2px solid var(--accent-ink);color:var(--accent-ink);font:600 16px/1.35 var(--body)}
+.err.show{display:block}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:52px;padding:0 28px;border-radius:999px;border:0;cursor:pointer;text-decoration:none;font:700 20px/1 var(--body);letter-spacing:.06em;text-transform:uppercase;background:var(--bg);color:var(--fg);width:100%}
+.btn:hover{background:var(--accent)}
+.btn[disabled]{opacity:.6;cursor:wait}
+.btn-line{background:transparent;color:var(--fg);border:2px solid rgba(255,252,241,.6);width:auto}
+.btn-line:hover{background:transparent;border-color:var(--fg)}
+.small{margin:14px 0 0;font:italic 400 14px/1.4 var(--display);color:rgba(102,0,51,.7)}
+.small a{color:var(--bg)}
+.hp{position:absolute;left:-9999px;top:-9999px;height:0;overflow:hidden}
+/* confirmation */
+.done{margin-top:32px}
+.done .btn-line{color:var(--bg);border-color:rgba(102,0,51,.5)}
+.done .btn-line:hover{border-color:var(--bg)}
+.done h2{font:900 clamp(34px,7vw,48px)/1 var(--display);font-style:italic;font-variation-settings:'SOFT' 100,'WONK' 1,'opsz' 144;margin:0 0 18px}
+.done dl{display:grid;grid-template-columns:auto 1fr;gap:10px 18px;margin:0 0 22px;align-items:baseline}
+.done dt{font:600 12px/1.4 var(--mono);letter-spacing:.14em;text-transform:uppercase;color:rgba(102,0,51,.7)}
+.done dd{margin:0;font:600 22px/1.2 var(--body)}
+.done .call{font:600 20px/1.3 var(--body);margin:0 0 6px}
+.done .call a{font-size:26px;letter-spacing:.04em;text-decoration:none;border-bottom:2px solid var(--accent)}
+.done .ref{font:500 12px/1.4 var(--mono);letter-spacing:.14em;text-transform:uppercase;color:rgba(102,0,51,.6);margin:18px 0 0}
+.after{display:flex;flex-wrap:wrap;gap:12px;margin-top:28px}
+footer{margin-top:48px;font:500 11px/1.6 var(--mono);letter-spacing:.14em;text-transform:uppercase;color:var(--mute);display:flex;flex-wrap:wrap;gap:6px 22px}
+footer a{text-decoration:none}
+</style>
+</head>
+<body>
+<div class="grain" aria-hidden="true"></div>
+<div class="wrap">
+  <header class="top">
+    <a href="/" aria-label="SWING — home"><img src="assets/logo-cream.svg" alt="SWING" width="104" height="29"></a>
+    <nav aria-label="Main" class="mono">
+      <a class="navlink" href="/#program" data-i18n="nav_program">Program</a>
+      <span class="lang" role="group" aria-label="Language">
+        <button type="button" data-lang="en" aria-pressed="true" lang="en">EN</button>
+        <button type="button" data-lang="bg" aria-pressed="false" lang="bg">БГ</button>
+      </span>
+    </nav>
+  </header>
+
+  <main>
+    <section id="form-view">
+      <h1 data-i18n="title">Reserve a table.</h1>
+      <p class="lead" data-i18n="lead">Pick the night, say how many of you. No deposit, no app. We'll keep the table.</p>
+
+      <form class="card" id="form" novalidate>
+        <img class="star" src="assets/starburst.svg" alt="" aria-hidden="true">
+        <div class="err" id="err" role="alert"></div>
+
+        <div class="field">
+          <label for="night"><span data-i18n="f_night">Which night</span> <i>*</i></label>
+          <select id="night" name="night" required></select>
+          <input type="date" id="other-date" name="otherDate" aria-label="Date" hidden>
+        </div>
+
+        <div class="row">
+          <div class="field">
+            <label for="name"><span data-i18n="f_name">Name and surname</span> <i>*</i></label>
+            <input id="name" name="name" type="text" autocomplete="name" maxlength="80" required>
+          </div>
+          <div class="field">
+            <label for="guests"><span data-i18n="f_guests">How many of you</span> <i>*</i></label>
+            <select id="guests" name="guests" required></select>
+          </div>
+        </div>
+
+        <div class="row">
+          <div class="field">
+            <label for="phone"><span data-i18n="f_phone">Phone</span> <i>*</i></label>
+            <input id="phone" name="phone" type="tel" inputmode="tel" autocomplete="tel" maxlength="30" placeholder="08x xxx xxxx" required>
+          </div>
+          <div class="field">
+            <label for="email"><span data-i18n="f_email">Email</span> <span class="hint" data-i18n="optional">(optional)</span></label>
+            <input id="email" name="email" type="email" inputmode="email" autocomplete="email" maxlength="120">
+          </div>
+        </div>
+
+        <div class="field">
+          <label for="requests"><span data-i18n="f_requests">Anything we should know</span> <span class="hint" data-i18n="optional">(optional)</span></label>
+          <textarea id="requests" name="requests" maxlength="1000" data-i18n-placeholder="ph_requests" placeholder="Birthday, a table near the stage, a wheelchair, a cake in the fridge…"></textarea>
+        </div>
+
+        <div class="hp" aria-hidden="true"><label for="website">Website</label><input id="website" name="website" type="text" tabindex="-1" autocomplete="off"></div>
+        <input type="hidden" name="t" id="t">
+
+        <button class="btn" type="submit" id="submit" data-i18n="submit">Book the table</button>
+        <p class="small"><span data-i18n="consent">We use these details only to handle your reservation.</span> <a href="privacy.html" data-i18n="privacy">Privacy</a></p>
+      </form>
+    </section>
+
+    <section id="done-view" class="card done" hidden aria-live="polite">
+      <img class="star" src="assets/starburst.svg" alt="" aria-hidden="true">
+      <h2 data-i18n="done_h">Table booked.</h2>
+      <dl>
+        <dt data-i18n="d_night">Night</dt><dd id="d-night"></dd>
+        <dt data-i18n="d_guests">Guests</dt><dd id="d-guests"></dd>
+        <dt data-i18n="d_name">Name</dt><dd id="d-name"></dd>
+      </dl>
+      <p class="call"><span data-i18n="done_call">Changes, questions, a bigger group? Call us:</span><br><a href="tel:+359896840161">089 684 0161</a></p>
+      <p class="hint" id="done-email" hidden data-i18n="done_email">We've sent a copy to your email.</p>
+      <p class="ref"><span data-i18n="ref">Ref</span> <span id="d-ref"></span></p>
+      <div class="after">
+        <a class="btn" style="width:auto" href="/#program" data-i18n="done_program">See the program</a>
+        <a class="btn btn-line" href="https://menu.swingsofia.com" data-i18n="done_menu">The menu ↗</a>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <span>© <span id="year"></span> SWING · Sofia</span>
+    <a href="/">swingsofia.com</a>
+    <a href="privacy.html" data-i18n="privacy">Privacy</a>
+  </footer>
+</div>
+
+<script src="program.js"></script>
+<script>
+(function () {
+  var PHONE_TEL = '+359896840161';
+  var T = {
+    en: {
+      nav_program: 'Program', title: 'Reserve a table.', lead: 'Pick the night, say how many of you. No deposit, no app. We’ll keep the table.',
+      f_night: 'Which night', f_name: 'Name and surname', f_guests: 'How many of you', f_phone: 'Phone', f_email: 'Email', f_requests: 'Anything we should know',
+      optional: '(optional)', ph_requests: 'Birthday, a table near the stage, a wheelchair, a cake in the fridge…',
+      submit: 'Book the table', sending: 'Sending…', consent: 'We use these details only to handle your reservation.', privacy: 'Privacy',
+      other: 'Another night — just the bar', guest1: '1 person', guestN: ' people', pick_date: 'Pick a date',
+      e_name: 'Tell us your name.', e_guests: 'How many of you?', e_phone: 'We need a phone number to reach you.', e_email: 'That email doesn’t look right.', e_event: 'Pick a night.',
+      e_rate: 'Too many bookings from this device. Call us instead: 089 684 0161.', e_delivery: 'Something went wrong on our side. Please call 089 684 0161 and we’ll sort it out.', e_net: 'No connection. Try again, or call 089 684 0161.',
+      done_h: 'Table booked.', d_night: 'Night', d_guests: 'Guests', d_name: 'Name', done_call: 'Changes, questions, a bigger group? Call us:', done_email: 'We’ve sent a copy to your email.', ref: 'Ref', done_program: 'See the program', done_menu: 'The menu ↗',
+      days: ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'], months: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
+    },
+    bg: {
+      nav_program: 'Програма', title: 'Резервирай маса.', lead: 'Избери вечерта, кажи колко сте. Без депозит, без приложение. Масата е твоя.',
+      f_night: 'Коя вечер', f_name: 'Име и фамилия', f_guests: 'Колко сте', f_phone: 'Телефон', f_email: 'Имейл', f_requests: 'Нещо, което трябва да знаем',
+      optional: '(по желание)', ph_requests: 'Рожден ден, маса до сцената, инвалидна количка, торта в хладилника…',
+      submit: 'Запази масата', sending: 'Изпращаме…', consent: 'Използваме тези данни само за резервацията ти.', privacy: 'Поверителност',
+      other: 'Друга вечер — само барът', guest1: '1 човек', guestN: ' души', pick_date: 'Избери дата',
+      e_name: 'Кажи ни името си.', e_guests: 'Колко сте?', e_phone: 'Трябва ни телефон, за да те намерим.', e_email: 'Имейлът не изглежда наред.', e_event: 'Избери вечер.',
+      e_rate: 'Твърде много резервации от това устройство. Обади се: 089 684 0161.', e_delivery: 'Нещо се обърка при нас. Моля, обади се на 089 684 0161 и ще го уредим.', e_net: 'Няма връзка. Опитай пак или се обади на 089 684 0161.',
+      done_h: 'Масата е запазена.', d_night: 'Вечер', d_guests: 'Гости', d_name: 'Име', done_call: 'Промяна, въпрос, по-голяма компания? Обади ни се:', done_email: 'Изпратихме копие на имейла ти.', ref: 'Номер', done_program: 'Към програмата', done_menu: 'Менюто ↗',
+      days: ['нд', 'пн', 'вт', 'ср', 'чт', 'пт', 'сб'], months: ['ян', 'фев', 'март', 'апр', 'май', 'юни', 'юли', 'авг', 'сеп', 'окт', 'ноем', 'дек']
+    }
+  };
+  var $ = function (s) { return document.querySelector(s); };
+  var $$ = function (s) { return Array.prototype.slice.call(document.querySelectorAll(s)); };
+  var lang = 'en';
+  try { var sv = localStorage.getItem('swing-lang'); if (sv === 'bg' || sv === 'en') lang = sv; else if ((navigator.language || '').toLowerCase().indexOf('bg') === 0) lang = 'bg'; } catch (e) {}
+
+  var pad2 = function (n) { return (n < 10 ? '0' : '') + n; };
+  function parseDate(iso) { var p = iso.split('-'); return new Date(+p[0], +p[1] - 1, +p[2]); }
+  function label(iso, time, act) {
+    var t = T[lang], d = parseDate(iso);
+    return t.days[d.getDay()] + ' ' + d.getDate() + ' ' + t.months[d.getMonth()] + (time ? ' · ' + time : '') + (act ? ' · ' + act : '');
+  }
+
+  var shows = [];
+  try {
+    var now = new Date(), t0 = new Date(now.getFullYear(), now.getMonth(), now.getDate()).getTime();
+    shows = (window.SWING_PROGRAM && window.SWING_PROGRAM.shows || []).filter(function (s) { return s && s.date && s.act && parseDate(s.date).getTime() >= t0; })
+      .sort(function (a, b) { return (a.date + a.time) < (b.date + b.time) ? -1 : 1; });
+  } catch (e) {}
+
+  function fillNights() {
+    var sel = $('#night'), t = T[lang], keep = sel.value;
+    sel.innerHTML = '';
+    var ph = document.createElement('option'); ph.value = ''; ph.textContent = t.f_night + '…'; ph.disabled = true; sel.appendChild(ph);
+    shows.forEach(function (s) {
+      var o = document.createElement('option'); o.value = s.date + '|' + (s.time || '') + '|' + s.act;
+      o.textContent = label(s.date, s.time, s.act + (s.sub ? ' (' + s.sub + ')' : '')); sel.appendChild(o);
+    });
+    var other = document.createElement('option'); other.value = 'other'; other.textContent = t.other; sel.appendChild(other);
+    sel.value = keep && Array.prototype.some.call(sel.options, function (o) { return o.value === keep; }) ? keep : '';
+    if (!sel.value) { ph.selected = true; }
+    onNight();
+  }
+  function fillGuests() {
+    var sel = $('#guests'), t = T[lang], keep = sel.value || '2';
+    sel.innerHTML = '';
+    for (var i = 1; i <= 20; i++) { var o = document.createElement('option'); o.value = String(i); o.textContent = i === 1 ? t.guest1 : i + t.guestN; sel.appendChild(o); }
+    sel.value = keep;
+  }
+  function onNight() {
+    var other = $('#night').value === 'other', od = $('#other-date');
+    od.hidden = !other;
+    if (other) { var n = new Date(); od.min = n.getFullYear() + '-' + pad2(n.getMonth() + 1) + '-' + pad2(n.getDate()); }
+  }
+
+  function applyCopy() {
+    var t = T[lang];
+    document.documentElement.lang = lang;
+    $$('[data-i18n]').forEach(function (el) { var k = el.getAttribute('data-i18n'); if (t[k] != null) el.textContent = t[k]; });
+    $$('[data-i18n-placeholder]').forEach(function (el) { var k = el.getAttribute('data-i18n-placeholder'); if (t[k] != null) el.placeholder = t[k]; });
+    $$('.lang button').forEach(function (b) { b.setAttribute('aria-pressed', b.getAttribute('data-lang') === lang ? 'true' : 'false'); });
+    fillNights(); fillGuests();
+  }
+  function setLang(l) { lang = l; try { localStorage.setItem('swing-lang', l); } catch (e) {} applyCopy(); }
+
+  // ?night=YYYY-MM-DD[&time=HH:MM] preselects a show, so each ad or post can link to its own night.
+  function preselect() {
+    try {
+      var q = new URLSearchParams(location.search), night = q.get('night'), time = q.get('time'), sel = $('#night');
+      if (!night) return;
+      var opt = Array.prototype.filter.call(sel.options, function (o) { return o.value.indexOf(night + '|') === 0 && (!time || o.value.indexOf(night + '|' + time + '|') === 0); })[0];
+      if (opt) { sel.value = opt.value; onNight(); }
+    } catch (e) {}
+  }
+
+  function showError(key) { var t = T[lang], el = $('#err'); el.textContent = t['e_' + key] || t.e_delivery; el.className = 'err show'; el.scrollIntoView({ block: 'center', behavior: 'smooth' }); }
+  function clearError() { $('#err').className = 'err'; $$('[aria-invalid]').forEach(function (el) { el.removeAttribute('aria-invalid'); }); }
+  function invalid(id, key) { var el = $('#' + id); el.setAttribute('aria-invalid', 'true'); showError(key); el.focus(); return false; }
+
+  function collect() {
+    var nightVal = $('#night').value, night, time = '', act = '', lbl;
+    if (!nightVal) return invalid('night', 'event');
+    if (nightVal === 'other') {
+      night = $('#other-date').value; if (!night) return invalid('other-date', 'event'); lbl = label(night, '', '') + ' · ' + T[lang].other;
+    } else {
+      var p = nightVal.split('|'); night = p[0]; time = p[1]; act = p.slice(2).join('|'); lbl = label(night, time, act);
+    }
+    var name = $('#name').value.trim(); if (name.length < 2) return invalid('name', 'name');
+    var guests = $('#guests').value; if (!(+guests >= 1 && +guests <= 20)) return invalid('guests', 'guests');
+    var phone = $('#phone').value.trim(); if (!/^[+\d][\d\s().-]{5,}$/.test(phone)) return invalid('phone', 'phone');
+    var email = $('#email').value.trim(); if (email && !/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(email)) return invalid('email', 'email');
+    return { night: night, time: time, act: act, label: lbl, name: name, guests: +guests, phone: phone, email: email, requests: $('#requests').value.trim(), website: $('#website').value, t: +$('#t').value, lang: lang };
+  }
+
+  function done(data, ref) {
+    $('#d-night').textContent = data.label; $('#d-guests').textContent = String(data.guests); $('#d-name').textContent = data.name; $('#d-ref').textContent = ref;
+    $('#done-email').hidden = !data.email;
+    $('#form-view').hidden = true; $('#done-view').hidden = false;
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+    try { if (window.fbq) window.fbq('track', 'Schedule', { content_name: 'Table reservation', content_category: data.night }); } catch (e) {}
+    try { if (window.gtag) window.gtag('event', 'reservation', { night: data.night, guests: data.guests }); } catch (e) {}
+    try { history.replaceState(null, '', location.pathname + '#done'); } catch (e) {}
+  }
+
+  $('#form').addEventListener('submit', function (e) {
+    e.preventDefault(); clearError();
+    var data = collect(); if (!data) return;
+    var btn = $('#submit'); btn.disabled = true; btn.textContent = T[lang].sending;
+    // The server ignores forms filled in under 3 seconds (bots). A fast human just waits the remainder.
+    var wait = Math.max(0, 3200 - (Date.now() - data.t));
+    new Promise(function (ok) { setTimeout(ok, wait); }).then(function () { data.t = +$('#t').value; return fetch('/api/reserve', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(data) })
+      .then(function (r) { return r.json().then(function (j) { return { status: r.status, body: j }; }); })
+      .then(function (res) {
+        if (res.body && res.body.ok) return done(data, res.body.ref || '');
+        showError(res.body && res.body.error === 'rate' ? 'rate' : (res.status >= 500 ? 'delivery' : (res.body && res.body.error) || 'delivery'));
+      })
+      .catch(function () { showError('net'); })
+      .then(function () { btn.disabled = false; btn.textContent = T[lang].submit; }); });
+  });
+  $('#night').addEventListener('change', onNight);
+  $$('.lang button').forEach(function (b) { b.addEventListener('click', function () { setLang(b.getAttribute('data-lang')); }); });
+
+  $('#t').value = String(Date.now());
+  $('#year').textContent = String(new Date().getFullYear());
+  applyCopy();
+  preselect();
+})();
+</script>
+<script src="assets/tracking.js" defer></script>
+</body>
+</html>
