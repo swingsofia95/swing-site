@@ -4,7 +4,9 @@
 // validates the request and hands the booking to up to three places, in parallel:
 //   • the Google Sheet script (sheets/Code.gs) — adds a row, emails the venue and the
 //     guest from the swing.sofia95 Gmail, and feeds the 2-hours-before Discord digest
-//   • a Discord webhook — one card per booking, the moment it arrives
+//   • a Discord webhook — with the Redis store below: ONE message per event that is edited as
+//     bookings arrive (always the full list) + a one-line ping per booking; without the store:
+//     one card per booking
 //   • Resend — optional, only if you want emails sent from reservations@swingsofia.com
 //     instead of the Gmail account (then set CONFIG.sendEmail = false in the sheet script)
 //
@@ -12,6 +14,8 @@
 //   SHEET_WEBHOOK_URL     the Apps Script "Web app" URL (see the guide)
 //   SHEET_SECRET          the same secret as CONFIG.secret in the script
 //   DISCORD_WEBHOOK_URL   from Discord → channel → Integrations → Webhooks
+//   KV_REST_API_URL + KV_REST_API_TOKEN   set automatically when an Upstash Redis store from
+//                         Vercel → Storage is connected to the project (UPSTASH_REDIS_REST_* also accepted)
 //   RESEND_API_KEY        optional, from resend.com
 //   RESERVATIONS_TO       optional, default swing.sofia95@gmail.com (Resend only)
 //   RESERVATIONS_FROM     optional, default SWING <reservations@swingsofia.com> (Resend only)
@@ -142,6 +146,74 @@ async function sendResend(msg) {
   return res.json();
 }
 
+/* ---------- Redis (Upstash REST) ---------- */
+const REDIS_URL = process.env.KV_REST_API_URL || process.env.UPSTASH_REDIS_REST_URL || '';
+const REDIS_TOKEN = process.env.KV_REST_API_TOKEN || process.env.UPSTASH_REDIS_REST_TOKEN || '';
+async function redis(...cmd) {
+  const res = await fetch(REDIS_URL, { method: 'POST', headers: { Authorization: 'Bearer ' + REDIS_TOKEN, 'Content-Type': 'application/json' }, body: JSON.stringify(cmd) });
+  const j = await res.json().catch(() => ({}));
+  if (!res.ok || j.error) throw new Error('redis ' + res.status + ': ' + (j.error || ''));
+  return j.result;
+}
+
+/* ---------- Discord: one living message per event ---------- */
+function eventTitle(r) { return r.label; }
+function renderEvent(r, items) {
+  const live = items.filter(i => !i.cancelled);
+  const guests = live.reduce((n, i) => n + (Number(i.guests) || 0), 0);
+  const lines = live.map((i, n) => (n + 1) + '. **' + i.name + '** ×' + i.guests + ' — ' + i.phone +
+    (i.requests ? ' — _' + String(i.requests).replace(/\s+/g, ' ').slice(0, 120) + '_' : '') + ' `' + i.ref + '`');
+  let desc = lines.join('\n');
+  if (desc.length > 3900) desc = desc.slice(0, 3850) + '\n… and more';
+  const hhmm = new Date().toLocaleTimeString('en-GB', { timeZone: 'Europe/Sofia', hour: '2-digit', minute: '2-digit' });
+  return {
+    username: 'SWING reservations',
+    content: '📋 **' + eventTitle(r) + '**',
+    embeds: [{
+      color: 0xF63719,
+      title: live.length + ' table' + (live.length === 1 ? '' : 's') + ' · ' + guests + ' guest' + (guests === 1 ? '' : 's'),
+      description: desc || '_No reservations yet._',
+      footer: { text: 'swingsofia.com/reserve · updated ' + hhmm }
+    }]
+  };
+}
+async function discordLiveList(r, id) {
+  const hook = process.env.DISCORD_WEBHOOK_URL;
+  if (!hook || !REDIS_URL || !REDIS_TOKEN) return null;
+  const key = r.night + '|' + (r.time || '');
+  const listKey = 'resv:' + key, msgKey = 'resvmsg:' + key;
+  const entry = { ref: id, name: r.name, guests: r.guests, phone: r.phone, email: r.email, requests: r.requests, lang: r.lang, at: Date.now() };
+  await redis('RPUSH', listKey, JSON.stringify(entry));
+  const ttl = Math.max(7, Math.round((new Date(r.night + 'T12:00:00Z').getTime() - Date.now()) / 86400000) + 45) * 86400; // keep 45 days past the night
+  await redis('EXPIRE', listKey, ttl);
+  await redis('SADD', 'resv:events', key);
+  const items = (await redis('LRANGE', listKey, 0, -1)).map(s => { try { return JSON.parse(s); } catch (e) { return null; } }).filter(Boolean);
+  const payload = renderEvent(r, items);
+  const hdr = { 'Content-Type': 'application/json' };
+
+  let msgId = await redis('GET', msgKey);
+  if (msgId) {
+    const res = await fetch(hook + '/messages/' + msgId, { method: 'PATCH', headers: hdr, body: JSON.stringify(payload) });
+    if (res.status === 404) msgId = null;                       // someone deleted it: make a new one
+    else if (!res.ok) throw new Error('Discord edit ' + res.status + ': ' + (await res.text()).slice(0, 200));
+  }
+  if (!msgId) {
+    const res = await fetch(hook + (hook.includes('?') ? '&' : '?') + 'wait=true', { method: 'POST', headers: hdr, body: JSON.stringify(payload) });
+    if (!res.ok) throw new Error('Discord post ' + res.status + ': ' + (await res.text()).slice(0, 200));
+    const msg = await res.json();
+    const set = await redis('SET', msgKey, msg.id, 'NX', 'EX', ttl);
+    if (set !== 'OK') {                                          // two first bookings at once: keep the other message
+      await fetch(hook + '/messages/' + msg.id, { method: 'DELETE' }).catch(() => {});
+      const other = await redis('GET', msgKey);
+      if (other) await fetch(hook + '/messages/' + other, { method: 'PATCH', headers: hdr, body: JSON.stringify(payload) });
+    }
+  }
+  // A short line so the channel pings; the list message above stays the source of truth.
+  await fetch(hook, { method: 'POST', headers: hdr, body: JSON.stringify({ username: 'SWING reservations',
+    content: '🆕 **' + r.name + '** ×' + r.guests + ' → ' + r.label + (r.requests ? ' — _' + String(r.requests).replace(/\s+/g, ' ').slice(0, 80) + '_' : '') }) }).catch(() => {});
+  return true;
+}
+
 async function sendDiscord(r, id) {
   const url = process.env.DISCORD_WEBHOOK_URL;
   if (!url) return null;                                  // not configured: skip quietly
@@ -191,7 +263,7 @@ module.exports = async (req, res) => {
   const jobs = [
     logToSheet(r, id).then(j => j ? 'sheet' + (j.email ? '+gmail' : '') : null).catch(e => { console.error('sheet failed:', e.message); return null; }),
     sendResend(venueEmail(r, id)).then(x => x ? 'email' : null).catch(e => { console.error('email failed:', e.message); return null; }),
-    sendDiscord(r, id).then(x => x === null ? null : 'discord').catch(e => { console.error('discord failed:', e.message); return null; })
+    (REDIS_URL && REDIS_TOKEN ? discordLiveList(r, id) : sendDiscord(r, id)).then(x => x === null ? null : 'discord').catch(e => { console.error('discord failed:', e.message); return null; })
   ];
   if (r.email) jobs.push(sendResend(guestEmail(r, id)).then(x => x ? 'guest' : null).catch(e => { console.error('guest email failed:', e.message); return null; }));
   const done = (await Promise.all(jobs)).filter(Boolean);
