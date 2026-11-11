@@ -22,7 +22,7 @@ If the page shows a red "program.js has a typo" box, a comma or quote went missi
 
 ## Reservations and capacity
 
-`/reserve` takes table bookings. Seats are counted per show: shows starting 19:00–21:00 (small stage) take up to **40** guests online, shows starting 22:00–00:00 (big stage) up to **90**. From 40 % booked the site shows **High interest**; at 100 % the show is **SOLD OUT** and can't be booked. A show can have its own limit with `cap: 60` on its line in `program.js`.
+`/reserve` takes table bookings. Seats are counted per show: shows starting 19:00–21:00 (small stage) take up to **40** guests online, shows starting 22:00–00:00 (big stage) up to **90**. From 40 % booked the site shows **High interest**; at 100 % the show shows **Tables sold out** and can't be booked online (walk-ins still welcome). A show can have its own limit with `cap: 60` on its line in `program.js`.
 
 Every booking lands in the `#reservations` Discord channel (one message per show, kept current) with a **cancel** link for staff that frees the seats. The bits behind it: `api/reserve.js`, `api/availability.js`, `api/cancel.js`, `lib/capacity.js`; keys in Vercel → Environment Variables (`RESEND_API_KEY`, `DISCORD_WEBHOOK_URL`, the `KV_*` ones from the Upstash store, `ADMIN_KEY`).
 

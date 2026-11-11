@@ -154,7 +154,7 @@ async function sendResend(msg) {
 const C = require('../lib/capacity.js');
 
 /* ---------- Discord: one living message per event ---------- */
-function statusTag(status) { return status === 'sold_out' ? ' · SOLD OUT' : status === 'high' ? ' · High interest' : ''; }
+function statusTag(status) { return status === 'sold_out' ? ' · TABLES SOLD OUT' : status === 'high' ? ' · High interest' : ''; }
 function renderEvent(r, items, cap) {
   const live = items.filter(i => !i.cancelled);
   const guests = live.reduce((n, i) => n + (Number(i.guests) || 0), 0);
