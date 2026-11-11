@@ -12,7 +12,7 @@
 // ------------------------------------------------------------
 
 window.SWING_PROGRAM = {
-  updated: "2026-11-05",
+  updated: "2026-11-11",
 
   shows: [
     { date: "2026-11-06", time: "20:30", act: "Leafy & The Capones", sub: "Italian night" },
@@ -31,6 +31,7 @@ window.SWING_PROGRAM = {
     { date: "2026-11-27", time: "23:00", act: "Monolit" },
     { date: "2026-11-28", time: "20:00", act: "The Sticks" },
     { date: "2026-11-28", time: "23:00", act: "Affection Seattle Grunge" },
-    { date: "2026-11-29", time: "20:00", act: "AURA Trio" }
+    { date: "2026-11-29", time: "20:00", act: "AURA Trio" },
+    { date: "2026-12-04", time: "23:00", act: "Tornado" }
   ]
 };
