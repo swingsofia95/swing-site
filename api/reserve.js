@@ -209,7 +209,8 @@ async function discordLiveList(r, id, key, cap) {
   await syncEventMessage(r, key, cap);
   // A short line so the channel pings; the list message above stays the source of truth.
   const admin = process.env.ADMIN_KEY;
-  const cancel = admin ? ' · [cancel](' + SITE + '/api/cancel?ref=' + encodeURIComponent(id) + '&key=' + encodeURIComponent(admin) + ')' : '';
+  // The URL sits inside <…> so Discord does not open it to build a link preview.
+  const cancel = admin ? ' · [cancel](<' + SITE + '/api/cancel?ref=' + encodeURIComponent(id) + '&key=' + encodeURIComponent(admin) + '>)' : '';
   await fetch(hook, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ username: 'SWING reservations',
     content: '🆕 **' + r.name + '** ×' + r.guests + ' → ' + r.label + (r.requests ? ' — _' + String(r.requests).replace(/\s+/g, ' ').slice(0, 80) + '_' : '') + ' `' + id + '`' + cancel }) }).catch(() => {});
   return true;
