@@ -15,7 +15,11 @@
 //   SHEET_SECRET          the same secret as CONFIG.secret in the script
 //   DISCORD_WEBHOOK_URL   from Discord → channel → Integrations → Webhooks
 //   KV_REST_API_URL + KV_REST_API_TOKEN   set automatically when an Upstash Redis store from
-//                         Vercel → Storage is connected to the project (UPSTASH_REDIS_REST_* also accepted)
+//                         Vercel → Storage is connected to the project (UPSTASH_REDIS_REST_* also accepted).
+//                         With the store, seats are counted per show (lib/capacity.js) and
+//                         bookings over the cap are refused with 409.
+//   ADMIN_KEY             optional: any long phrase; adds a "cancel" link to each Discord ping
+//                         (/api/cancel?ref=…&key=…) that frees the seats
 //   RESEND_API_KEY        optional, from resend.com
 //   RESERVATIONS_TO       optional, default swing.sofia95@gmail.com (Resend only)
 //   RESERVATIONS_FROM     optional, default SWING <reservations@swingsofia.com> (Resend only)
@@ -146,19 +150,12 @@ async function sendResend(msg) {
   return res.json();
 }
 
-/* ---------- Redis (Upstash REST) ---------- */
-const REDIS_URL = process.env.KV_REST_API_URL || process.env.UPSTASH_REDIS_REST_URL || '';
-const REDIS_TOKEN = process.env.KV_REST_API_TOKEN || process.env.UPSTASH_REDIS_REST_TOKEN || '';
-async function redis(...cmd) {
-  const res = await fetch(REDIS_URL, { method: 'POST', headers: { Authorization: 'Bearer ' + REDIS_TOKEN, 'Content-Type': 'application/json' }, body: JSON.stringify(cmd) });
-  const j = await res.json().catch(() => ({}));
-  if (!res.ok || j.error) throw new Error('redis ' + res.status + ': ' + (j.error || ''));
-  return j.result;
-}
+/* ---------- capacity + Redis (see lib/capacity.js) ---------- */
+const C = require('../lib/capacity.js');
 
 /* ---------- Discord: one living message per event ---------- */
-function eventTitle(r) { return r.label; }
-function renderEvent(r, items) {
+function statusTag(status) { return status === 'sold_out' ? ' · SOLD OUT' : status === 'high' ? ' · High interest' : ''; }
+function renderEvent(r, items, cap) {
   const live = items.filter(i => !i.cancelled);
   const guests = live.reduce((n, i) => n + (Number(i.guests) || 0), 0);
   const lines = live.map((i, n) => (n + 1) + '. **' + i.name + '** ×' + i.guests + ' — ' + i.phone +
@@ -166,32 +163,28 @@ function renderEvent(r, items) {
   let desc = lines.join('\n');
   if (desc.length > 3900) desc = desc.slice(0, 3850) + '\n… and more';
   const hhmm = new Date().toLocaleTimeString('en-GB', { timeZone: 'Europe/Sofia', hour: '2-digit', minute: '2-digit' });
+  const status = C.statusFor(guests, cap);
   return {
     username: 'SWING reservations',
-    content: '📋 **' + eventTitle(r) + '**',
+    content: '📋 **' + r.label + '**',
     embeds: [{
-      color: 0xF63719,
-      title: live.length + ' table' + (live.length === 1 ? '' : 's') + ' · ' + guests + ' guest' + (guests === 1 ? '' : 's'),
+      color: status === 'sold_out' ? 0x660033 : 0xF63719,
+      title: live.length + ' table' + (live.length === 1 ? '' : 's') + ' · ' + guests + ' / ' + cap + ' guests' + statusTag(status),
       description: desc || '_No reservations yet._',
       footer: { text: 'swingsofia.com/reserve · updated ' + hhmm }
     }]
   };
 }
-async function discordLiveList(r, id) {
-  const hook = process.env.DISCORD_WEBHOOK_URL;
-  if (!hook || !REDIS_URL || !REDIS_TOKEN) return null;
-  const key = r.night + '|' + (r.time || '');
-  const listKey = 'resv:' + key, msgKey = 'resvmsg:' + key;
-  const entry = { ref: id, name: r.name, guests: r.guests, phone: r.phone, email: r.email, requests: r.requests, lang: r.lang, at: Date.now() };
-  await redis('RPUSH', listKey, JSON.stringify(entry));
-  const ttl = Math.max(7, Math.round((new Date(r.night + 'T12:00:00Z').getTime() - Date.now()) / 86400000) + 45) * 86400; // keep 45 days past the night
-  await redis('EXPIRE', listKey, ttl);
-  await redis('SADD', 'resv:events', key);
-  const items = (await redis('LRANGE', listKey, 0, -1)).map(s => { try { return JSON.parse(s); } catch (e) { return null; } }).filter(Boolean);
-  const payload = renderEvent(r, items);
-  const hdr = { 'Content-Type': 'application/json' };
 
-  let msgId = await redis('GET', msgKey);
+// Pushes the current list of an event to its Discord message (creating it the first time).
+async function syncEventMessage(r, key, cap) {
+  const hook = process.env.DISCORD_WEBHOOK_URL;
+  if (!hook) return;
+  const items = ((await C.redis('LRANGE', C.keys.list(key), 0, -1)) || []).map(s => { try { return JSON.parse(s); } catch (e) { return null; } }).filter(Boolean);
+  const payload = renderEvent(r, items, cap);
+  const hdr = { 'Content-Type': 'application/json' };
+  const ttl = C.ttlFor(r.night);
+  let msgId = await C.redis('GET', C.keys.msg(key));
   if (msgId) {
     const res = await fetch(hook + '/messages/' + msgId, { method: 'PATCH', headers: hdr, body: JSON.stringify(payload) });
     if (res.status === 404) msgId = null;                       // someone deleted it: make a new one
@@ -201,17 +194,46 @@ async function discordLiveList(r, id) {
     const res = await fetch(hook + (hook.includes('?') ? '&' : '?') + 'wait=true', { method: 'POST', headers: hdr, body: JSON.stringify(payload) });
     if (!res.ok) throw new Error('Discord post ' + res.status + ': ' + (await res.text()).slice(0, 200));
     const msg = await res.json();
-    const set = await redis('SET', msgKey, msg.id, 'NX', 'EX', ttl);
+    const set = await C.redis('SET', C.keys.msg(key), msg.id, 'NX', 'EX', ttl);
     if (set !== 'OK') {                                          // two first bookings at once: keep the other message
       await fetch(hook + '/messages/' + msg.id, { method: 'DELETE' }).catch(() => {});
-      const other = await redis('GET', msgKey);
+      const other = await C.redis('GET', C.keys.msg(key));
       if (other) await fetch(hook + '/messages/' + other, { method: 'PATCH', headers: hdr, body: JSON.stringify(payload) });
     }
   }
+}
+
+async function discordLiveList(r, id, key, cap) {
+  const hook = process.env.DISCORD_WEBHOOK_URL;
+  if (!hook) return null;
+  await syncEventMessage(r, key, cap);
   // A short line so the channel pings; the list message above stays the source of truth.
-  await fetch(hook, { method: 'POST', headers: hdr, body: JSON.stringify({ username: 'SWING reservations',
-    content: '🆕 **' + r.name + '** ×' + r.guests + ' → ' + r.label + (r.requests ? ' — _' + String(r.requests).replace(/\s+/g, ' ').slice(0, 80) + '_' : '') }) }).catch(() => {});
+  const admin = process.env.ADMIN_KEY;
+  const cancel = admin ? ' · [cancel](' + SITE + '/api/cancel?ref=' + encodeURIComponent(id) + '&key=' + encodeURIComponent(admin) + ')' : '';
+  await fetch(hook, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ username: 'SWING reservations',
+    content: '🆕 **' + r.name + '** ×' + r.guests + ' → ' + r.label + (r.requests ? ' — _' + String(r.requests).replace(/\s+/g, ' ').slice(0, 80) + '_' : '') + ' `' + id + '`' + cancel }) }).catch(() => {});
   return true;
+}
+
+// Reserves the seats atomically. Returns { ok:true, cap, guests } or { ok:false, cap, left }.
+async function takeSeats(r, id, key) {
+  const show = await C.findShow(r.night, r.time);
+  const cap = C.capFor(r.time, show);
+  const after = Number(await C.redis('INCRBY', C.keys.count(key), r.guests));
+  if (after > cap) {
+    await C.redis('DECRBY', C.keys.count(key), r.guests);
+    return { ok: false, cap, left: Math.max(0, cap - (after - r.guests)) };
+  }
+  const ttl = C.ttlFor(r.night);
+  const entry = { ref: id, name: r.name, guests: r.guests, phone: r.phone, email: r.email, requests: r.requests, lang: r.lang, label: r.label, night: r.night, time: r.time, at: Date.now() };
+  await C.pipeline([
+    ['RPUSH', C.keys.list(key), JSON.stringify(entry)],
+    ['EXPIRE', C.keys.list(key), ttl],
+    ['EXPIRE', C.keys.count(key), ttl],
+    ['SADD', C.keys.events, key],
+    ['SET', C.keys.ref(id), key, 'EX', ttl]
+  ]);
+  return { ok: true, cap, guests: after };
 }
 
 async function sendDiscord(r, id) {
@@ -260,10 +282,22 @@ module.exports = async (req, res) => {
   if (v.error) return res.status(400).json({ ok: false, error: v.error });
   const r = v.data, id = ref();
 
+  // Capacity: with the Redis store, seats are counted per show and a booking over the cap is refused.
+  const key = C.eventKey(r.night, r.time);
+  let seats = null;
+  if (C.hasRedis()) {
+    try { seats = await takeSeats(r, id, key); }
+    catch (e) { console.error('capacity check failed:', e.message); seats = null; }   // store down: accept, don't block the guest
+    if (seats && !seats.ok) {
+      console.log('reservation refused (full)', key, 'asked', r.guests, 'left', seats.left);
+      return res.status(409).json({ ok: false, error: seats.left > 0 ? 'left' : 'full', left: seats.left, cap: seats.cap });
+    }
+  }
+
   const jobs = [
     logToSheet(r, id).then(j => j ? 'sheet' + (j.email ? '+gmail' : '') : null).catch(e => { console.error('sheet failed:', e.message); return null; }),
     sendResend(venueEmail(r, id)).then(x => x ? 'email' : null).catch(e => { console.error('email failed:', e.message); return null; }),
-    (REDIS_URL && REDIS_TOKEN ? discordLiveList(r, id) : sendDiscord(r, id)).then(x => x === null ? null : 'discord').catch(e => { console.error('discord failed:', e.message); return null; })
+    (seats && seats.ok ? discordLiveList(r, id, key, seats.cap) : sendDiscord(r, id)).then(x => x === null ? null : 'discord').catch(e => { console.error('discord failed:', e.message); return null; })
   ];
   if (r.email) jobs.push(sendResend(guestEmail(r, id)).then(x => x ? 'guest' : null).catch(e => { console.error('guest email failed:', e.message); return null; }));
   const done = (await Promise.all(jobs)).filter(Boolean);
@@ -276,3 +310,5 @@ module.exports = async (req, res) => {
   console.log('reservation', id, done.join('+'), r.label, r.guests, r.name);
   return res.status(200).json({ ok: true, ref: id, via: done });
 };
+
+module.exports.syncEventMessage = syncEventMessage;

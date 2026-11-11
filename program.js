@@ -6,6 +6,8 @@
 //   • act:     the name as it should appear (Cyrillic is fine)
 //   • sub:     optional italic line under the act ("Italian night")
 //   • allAges: true adds the ALL AGES badge
+//   • cap:     optional, max guests for online reservations on that show (default: 40 for shows starting
+//              19:00–21:00 / small stage, 90 for 22:00–00:00 / big stage). Example: cap: 60
 //   • Past dates disappear from the site by themselves — delete them or leave them, it doesn't matter.
 //   • Change "updated" to today's date when you edit, it shows on the page.
 // Keep the commas and quotes as they are — one missing comma and the page shows an error.

@@ -55,6 +55,7 @@ textarea{min-height:96px;resize:vertical}
 input:focus,select:focus,textarea:focus{outline:none;border-color:var(--bg);box-shadow:0 0 0 3px rgba(246,55,25,.25)}
 input[aria-invalid="true"],select[aria-invalid="true"]{border-color:var(--accent-ink)}
 .hint{font:italic 400 14px/1.3 var(--display);color:rgba(102,0,51,.7)}
+#night-note{margin:4px 0 0;font-size:15px;color:var(--accent-ink)}
 .err{display:none;margin:0 0 16px;padding:12px 14px;border:2px solid var(--accent-ink);color:var(--accent-ink);font:600 16px/1.35 var(--body)}
 .err.show{display:block}
 .btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:52px;padding:0 28px;border-radius:999px;border:0;cursor:pointer;text-decoration:none;font:700 20px/1 var(--body);letter-spacing:.06em;text-transform:uppercase;background:var(--bg);color:var(--fg);width:100%}
@@ -108,6 +109,7 @@ footer a{text-decoration:none}
           <label for="night"><span data-i18n="f_night">Which night</span> <i>*</i></label>
           <select id="night" name="night" required></select>
           <input type="date" id="other-date" name="otherDate" aria-label="Date" hidden>
+          <p class="hint" id="night-note" hidden></p>
         </div>
 
         <div class="row">
@@ -181,6 +183,9 @@ footer a{text-decoration:none}
       optional: '(optional)', ph_requests: 'Birthday, a table near the stage, a wheelchair, a cake in the fridge…',
       submit: 'Book the table', sending: 'Sending…', consent: 'We use these details only to handle your reservation.', privacy: 'Privacy',
       other: 'Another night — just the bar', guest1: '1 person', guestN: ' people', pick_date: 'Pick a date',
+      tag_hot: 'High interest', tag_sold: 'SOLD OUT',
+      note_sold: 'This show is sold out. Pick another night, or call 089 684 0161 to ask about a waiting list.', note_hot: 'High interest — tables for this one are going fast.', note_left: 'Only {n} seats left for this show.',
+      e_full: 'Sorry — this show just sold out. Pick another night or call 089 684 0161.', e_left: 'Only {n} seats left for this show — try a smaller group or another night.',
       e_name: 'Tell us your name.', e_guests: 'How many of you?', e_phone: 'We need a phone number to reach you.', e_email: 'That email doesn’t look right.', e_event: 'Pick a night.',
       e_rate: 'Too many bookings from this device. Call us instead: 089 684 0161.', e_delivery: 'Something went wrong on our side. Please call 089 684 0161 and we’ll sort it out.', e_net: 'No connection. Try again, or call 089 684 0161.',
       done_h: 'Table booked.', d_night: 'Night', d_guests: 'Guests', d_name: 'Name', done_call: 'Changes, questions, a bigger group? Call us:', done_email: 'We’ve sent a copy to your email.', ref: 'Ref', done_program: 'See the program', done_menu: 'The menu ↗',
@@ -192,6 +197,9 @@ footer a{text-decoration:none}
       optional: '(по желание)', ph_requests: 'Рожден ден, маса до сцената, инвалидна количка, торта в хладилника…',
       submit: 'Запази масата', sending: 'Изпращаме…', consent: 'Използваме тези данни само за резервацията ти.', privacy: 'Поверителност',
       other: 'Друга вечер — само барът', guest1: '1 човек', guestN: ' души', pick_date: 'Избери дата',
+      tag_hot: 'Голям интерес', tag_sold: 'РАЗПРОДАДЕНО',
+      note_sold: 'Този концерт е разпродаден. Избери друга вечер или се обади на 089 684 0161 за списък с чакащи.', note_hot: 'Голям интерес — масите за този концерт свършват бързо.', note_left: 'Остават само {n} места за този концерт.',
+      e_full: 'Съжаляваме — този концерт току-що се разпродаде. Избери друга вечер или се обади на 089 684 0161.', e_left: 'Остават само {n} места за този концерт — опитай с по-малка компания или друга вечер.',
       e_name: 'Кажи ни името си.', e_guests: 'Колко сте?', e_phone: 'Трябва ни телефон, за да те намерим.', e_email: 'Имейлът не изглежда наред.', e_event: 'Избери вечер.',
       e_rate: 'Твърде много резервации от това устройство. Обади се: 089 684 0161.', e_delivery: 'Нещо се обърка при нас. Моля, обади се на 089 684 0161 и ще го уредим.', e_net: 'Няма връзка. Опитай пак или се обади на 089 684 0161.',
       done_h: 'Масата е запазена.', d_night: 'Вечер', d_guests: 'Гости', d_name: 'Име', done_call: 'Промяна, въпрос, по-голяма компания? Обади ни се:', done_email: 'Изпратихме копие на имейла ти.', ref: 'Номер', done_program: 'Към програмата', done_menu: 'Менюто ↗',
@@ -217,13 +225,18 @@ footer a{text-decoration:none}
       .sort(function (a, b) { return (a.date + a.time) < (b.date + b.time) ? -1 : 1; });
   } catch (e) {}
 
+  var AV = null;   // /api/availability → { "date|time": { guests, cap, left, status } }
+  function avFor(value) { if (!AV || !value || value === 'other') return null; var p = value.split('|'); return AV[p[0] + '|' + (p[1] || '')] || null; }
   function fillNights() {
     var sel = $('#night'), t = T[lang], keep = sel.value;
     sel.innerHTML = '';
     var ph = document.createElement('option'); ph.value = ''; ph.textContent = t.f_night + '…'; ph.disabled = true; sel.appendChild(ph);
     shows.forEach(function (s) {
       var o = document.createElement('option'); o.value = s.date + '|' + (s.time || '') + '|' + s.act;
-      o.textContent = label(s.date, s.time, s.act + (s.sub ? ' (' + s.sub + ')' : '')); sel.appendChild(o);
+      var a = avFor(o.value), tag = a && a.status === 'sold_out' ? ' — ' + t.tag_sold : a && a.status === 'high' ? ' — ' + t.tag_hot : '';
+      o.textContent = label(s.date, s.time, s.act + (s.sub ? ' (' + s.sub + ')' : '')) + tag;
+      if (a && a.status === 'sold_out') o.disabled = true;
+      sel.appendChild(o);
     });
     var other = document.createElement('option'); other.value = 'other'; other.textContent = t.other; sel.appendChild(other);
     sel.value = keep && Array.prototype.some.call(sel.options, function (o) { return o.value === keep; }) ? keep : '';
@@ -232,14 +245,29 @@ footer a{text-decoration:none}
   }
   function fillGuests() {
     var sel = $('#guests'), t = T[lang], keep = sel.value || '2';
+    var a = avFor($('#night').value), max = a && AV && AV.__enforced ? Math.min(20, Math.max(1, a.left)) : 20;
     sel.innerHTML = '';
-    for (var i = 1; i <= 20; i++) { var o = document.createElement('option'); o.value = String(i); o.textContent = i === 1 ? t.guest1 : i + t.guestN; sel.appendChild(o); }
-    sel.value = keep;
+    for (var i = 1; i <= max; i++) { var o = document.createElement('option'); o.value = String(i); o.textContent = i === 1 ? t.guest1 : i + t.guestN; sel.appendChild(o); }
+    sel.value = +keep <= max ? keep : String(max);
   }
   function onNight() {
     var other = $('#night').value === 'other', od = $('#other-date');
     od.hidden = !other;
     if (other) { var n = new Date(); od.min = n.getFullYear() + '-' + pad2(n.getMonth() + 1) + '-' + pad2(n.getDate()); }
+    var t = T[lang], a = avFor($('#night').value), note = $('#night-note'), sold = !!(a && a.status === 'sold_out');
+    note.hidden = true;
+    if (a && sold) { note.textContent = t.note_sold; note.hidden = false; }
+    else if (a && a.left > 0 && a.left < 10) { note.textContent = t.note_left.replace('{n}', a.left); note.hidden = false; }
+    else if (a && a.status === 'high') { note.textContent = t.note_hot; note.hidden = false; }
+    $('#submit').disabled = sold;
+    fillGuests();
+  }
+  function loadAvailability() {
+    fetch('/api/availability', { cache: 'no-store' }).then(function (r) { return r.json(); }).then(function (j) {
+      if (!j || !j.events) return;
+      AV = j.events; AV.__enforced = !!j.enforced;
+      fillNights();
+    }).catch(function () {});
   }
   // Keep the address bar in step with the dropdown, so the URL can be copied straight into an ad.
   function syncUrl() {
@@ -271,7 +299,7 @@ footer a{text-decoration:none}
     } catch (e) {}
   }
 
-  function showError(key, detail) { var t = T[lang], el = $('#err'); el.textContent = (t['e_' + key] || t.e_delivery) + (detail ? ' (' + detail + ')' : ''); el.className = 'err show'; el.scrollIntoView({ block: 'center', behavior: 'smooth' }); }
+  function showError(key, detail, n) { var t = T[lang], el = $('#err'); el.textContent = (t['e_' + key] || t.e_delivery).replace('{n}', n == null ? '' : n) + (detail ? ' (' + detail + ')' : ''); el.className = 'err show'; el.scrollIntoView({ block: 'center', behavior: 'smooth' }); }
   function clearError() { $('#err').className = 'err'; $$('[aria-invalid]').forEach(function (el) { el.removeAttribute('aria-invalid'); }); }
   function invalid(id, key) { var el = $('#' + id); el.setAttribute('aria-invalid', 'true'); showError(key); el.focus(); return false; }
 
@@ -311,6 +339,7 @@ footer a{text-decoration:none}
       .then(function (res) {
         if (res.body && res.body.ok) return done(data, res.body.ref || '');
         var code = (res.body && res.body.error) || ('http ' + res.status);
+        if (code === 'full' || code === 'left') { showError(code, '', res.body.left); loadAvailability(); return; }
         showError(code === 'rate' ? 'rate' : (res.status >= 500 ? 'delivery' : code), code);
       })
       .catch(function (e) { showError('net', e && e.message ? e.message.slice(0, 60) : ''); })
@@ -323,6 +352,7 @@ footer a{text-decoration:none}
   $('#year').textContent = String(new Date().getFullYear());
   applyCopy();
   preselect();
+  loadAvailability();
 })();
 </script>
 <script src="assets/tracking.js" defer></script>
