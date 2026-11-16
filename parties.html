@@ -1,0 +1,593 @@
+<!doctype html>
+<html lang="bg">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Фирмено парти в SWING - коледно парти за екипа в София</title>
+<meta name="description" content="Цялото заведение ексклузивно за вашия екип: три пространства, сцена с над 30-годишна история, професионално озвучение, музика на живо или DJ. Запазете дата за декември.">
+<link rel="canonical" href="https://swingsofia.com/parties">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="SWING">
+<meta property="og:title" content="Фирмено парти в SWING - коледно парти за екипа">
+<meta property="og:description" content="Цялото заведение ексклузивно за вашия екип: три пространства, сцена, озвучение, музика на живо или DJ. Запазете дата за декември.">
+<meta property="og:url" content="https://swingsofia.com/parties">
+<meta property="og:image" content="https://swingsofia.com/assets/parties/og.jpg">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="theme-color" content="#660033">
+<link rel="icon" href="assets/icon-180.png" type="image/png">
+<link rel="apple-touch-icon" href="assets/icon-180.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600;700&family=Fraunces:ital,opsz,wght,SOFT,WONK@0,9..144,300..900,0..100,0..1;1,9..144,300..900,0..100,0..1&family=IBM+Plex+Mono:wght@500;600&family=Oswald:wght@400;500;600;700&family=Playfair+Display:ital,wght@0,400..900;1,400..900&family=Rubik:wght@900&display=swap">
+<style>
+/* ------------------------------------------------------------
+   SWING - company parties landing page (swingsofia.com/parties).
+   Same brand as the homepage. All copy lives in the T dictionary at the bottom (bg + en);
+   the form posts to /api/inquiry. Photos are in assets/parties/.
+   Fraunces and Barlow Condensed have no Cyrillic, so the Bulgarian version switches the
+   whole page to Playfair Display + Oswald instead of mixing two fonts inside one sentence.
+   ------------------------------------------------------------ */
+:root{
+  --bg:#660033;--bg-deep:#4D0026;--fg:#FFFCF1;--fg-soft:rgba(255,252,241,.8);--fg-mute:rgba(255,252,241,.64);
+  --accent:#F63719;--accent-ink:#D92D0C;--rule:rgba(255,252,241,.18);--ink:#1F000F;--burg-soft:rgba(102,0,51,.74);--burg-rule:rgba(102,0,51,.18);
+  --display:'Fraunces','Playfair Display',Georgia,'Times New Roman',serif;
+  --body:'Barlow Condensed','Oswald','Arial Narrow','Roboto Condensed',sans-serif;
+  --mono:'IBM Plex Mono',ui-monospace,SFMono-Regular,Menlo,monospace;
+  --poster:'Rubik','Oswald',Arial,sans-serif;
+  --pad:clamp(20px,4vw,48px);
+  color-scheme:dark;
+}
+html[lang="bg"]{--display:'Playfair Display',Georgia,'Times New Roman',serif;--body:'Oswald','Arial Narrow','Roboto Condensed',sans-serif}
+*{box-sizing:border-box}
+html,body{margin:0}
+html{scroll-behavior:smooth;-webkit-text-size-adjust:100%}
+@media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}}
+body{background:var(--bg);color:var(--fg);font-family:var(--body);font-weight:500;font-size:18px;line-height:1.3;min-height:100%;position:relative;overflow-x:clip}
+html[lang="bg"] body{font-weight:400}
+img{max-width:100%}
+[hidden]{display:none!important}
+a{color:inherit}
+:focus-visible{outline:2px solid var(--accent);outline-offset:3px}
+.grain{position:fixed;inset:0;background:url(assets/grain-dark.png) repeat;background-size:240px 240px;opacity:.07;pointer-events:none;z-index:0}
+.skip{position:absolute;left:-999px;top:8px;z-index:50;background:var(--fg);color:var(--bg);padding:10px 14px;font:600 14px var(--mono)}
+.skip:focus{left:8px}
+.wrap{position:relative;z-index:1;max-width:1200px;margin:0 auto;padding-left:max(var(--pad),env(safe-area-inset-left,0px));padding-right:max(var(--pad),env(safe-area-inset-right,0px))}
+section{scroll-margin-top:12px;position:relative;z-index:1}
+
+.mono{font:500 12px/1.4 var(--mono);letter-spacing:.14em;text-transform:uppercase}
+.h2{margin:0;font-family:var(--display);font-weight:900;font-style:italic;font-size:clamp(36px,4.6vw,58px);line-height:1;letter-spacing:-.01em;font-variation-settings:'SOFT' 100,'WONK' 1,'opsz' 144;text-wrap:balance}
+.prose{font-family:var(--display);font-weight:400;font-size:19px;line-height:1.5;font-variation-settings:'SOFT' 100,'WONK' 0,'opsz' 20}
+
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:50px;padding:0 28px;border-radius:999px;border:0;cursor:pointer;text-decoration:none;font:700 19px/1 var(--body);letter-spacing:.06em;text-transform:uppercase;text-align:center}
+.btn-cream{background:var(--fg);color:var(--bg)}
+.btn-cream:hover{background:var(--accent);color:var(--fg)}
+.btn-burg{background:var(--bg);color:var(--fg)}
+.btn-burg:hover{background:var(--accent)}
+.btn[disabled]{opacity:.6;cursor:wait}
+
+/* Top bar */
+.top{display:flex;align-items:center;justify-content:space-between;gap:8px 28px;flex-wrap:wrap;padding-top:calc(18px + env(safe-area-inset-top,0px));padding-bottom:14px}
+.top .home{display:block;padding:8px 0}
+.top .home img{width:118px;height:auto;display:block}
+.top nav{display:flex;align-items:center;gap:0 24px;flex-wrap:wrap}
+.navlink{text-decoration:none;padding:14px 0;display:inline-block}
+.navlink:hover{text-decoration:underline;text-decoration-color:var(--accent);text-decoration-thickness:2px;text-underline-offset:5px}
+.navlink.chip-fill{background:var(--fg);color:var(--bg);border-radius:999px;padding:13px 16px}
+.navlink.chip-fill:hover{background:var(--accent);color:var(--fg);text-decoration:none}
+.lang{display:inline-flex;border:1.5px solid rgba(255,252,241,.25);border-radius:999px;overflow:hidden}
+.lang button{appearance:none;border:0;background:transparent;color:var(--fg);font:500 12px/1.4 var(--mono);letter-spacing:.14em;text-transform:uppercase;padding:13px 12px;cursor:pointer}
+.lang button[aria-pressed="true"]{background:var(--fg);color:var(--bg)}
+@media (max-width:560px){.top nav{gap:0 14px}.top .hide-s{display:none}.navlink.chip-fill{padding:11px 13px}.lang button{padding:11px 10px}}
+
+/* Hero */
+.hero{display:grid;grid-template-columns:1fr;gap:48px 64px;align-items:center;padding-top:32px;padding-bottom:84px}
+@media (min-width:940px){.hero{grid-template-columns:minmax(0,1.05fr) minmax(0,.95fr)}}
+.hero .eyebrow{margin:0;color:var(--fg-mute);display:flex;align-items:center;gap:10px}
+.hero .eyebrow::before{content:"";width:10px;height:10px;border-radius:50%;background:var(--accent);flex:0 0 auto}
+.hero h1{margin:18px 0 0;font-family:var(--display);font-weight:900;font-style:italic;font-size:clamp(44px,5.4vw,72px);line-height:.98;letter-spacing:-.015em;font-variation-settings:'SOFT' 100,'WONK' 1,'opsz' 144;text-wrap:balance}
+.hero .kick{margin:18px 0 0;font-family:var(--display);font-style:italic;font-weight:400;font-size:clamp(22px,2.3vw,28px);line-height:1.2;color:var(--fg-soft);font-variation-settings:'SOFT' 100,'WONK' 1,'opsz' 30}
+.hero .lead{margin:22px 0 0;max-width:54ch;color:var(--fg-soft)}
+.hero .ctas{display:flex;flex-wrap:wrap;align-items:center;gap:14px 22px;margin-top:34px}
+.hero .call{text-decoration:none;color:var(--fg-soft)}
+.hero .call b{font:600 22px/1 var(--body);letter-spacing:.04em;color:var(--fg);border-bottom:2px solid var(--accent);padding-bottom:2px;margin-left:8px;font-variant-numeric:tabular-nums;white-space:nowrap}
+.shot{position:relative;transform:rotate(1.2deg);margin:0}
+.shot .frame{background:var(--fg);padding:10px 10px 0;box-shadow:8px 10px 0 rgba(0,0,0,.28)}
+.shot img.ph{display:block;width:100%;height:auto;aspect-ratio:4/3;object-fit:cover}
+.shot figcaption{color:var(--bg);padding:12px 4px 13px;display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap}
+.shot .star{position:absolute;right:-24px;top:-30px;width:96px;height:auto;transform:rotate(12deg);z-index:2}
+.shot .star-txt{position:absolute;right:-24px;top:-30px;width:96px;height:98px;display:flex;align-items:center;justify-content:center;z-index:3;font:900 21px/1 var(--body);color:var(--fg);letter-spacing:.08em;transform:rotate(-8deg)}
+@media (max-width:560px){.shot{transform:none}.shot .star,.shot .star-txt{right:-8px;top:-28px;width:84px}.shot .star-txt{height:86px;font-size:19px}}
+
+/* Ticker */
+.ticker{position:relative;z-index:1;background:var(--fg);color:var(--bg);border-top:3px solid var(--accent);border-bottom:3px solid var(--accent);padding:13px 0;overflow:hidden}
+.tick{display:flex;width:max-content;animation:tick 60s linear infinite}
+.tick span.item{display:inline-flex;align-items:center;gap:18px;padding:0 18px;white-space:nowrap;font:700 21px/1 var(--body);text-transform:uppercase;letter-spacing:.03em}
+.tick span.item i{font-style:normal;color:var(--accent);font-size:15px}
+@keyframes tick{from{transform:translateX(0)}to{transform:translateX(-50%)}}
+@media (prefers-reduced-motion:reduce){.tick{animation:none;flex-wrap:wrap;width:auto;row-gap:8px}}
+
+/* Included */
+#included{background:var(--fg);color:var(--bg)}
+#included .wrap{padding-top:88px;padding-bottom:92px}
+#included .eyebrow{margin:0 0 14px;color:var(--burg-soft)}
+.inc{list-style:none;margin:48px 0 0;padding:0;display:grid;grid-template-columns:1fr;gap:0 40px;border-top:2px solid var(--bg)}
+@media (min-width:720px){.inc{grid-template-columns:1fr 1fr}}
+@media (min-width:1080px){.inc{grid-template-columns:repeat(4,1fr)}}
+.inc li{padding:22px 0 26px;border-bottom:1px solid var(--burg-rule)}
+@media (min-width:1080px){.inc li{border-bottom:0}}
+.inc .n{font:900 34px/1 var(--poster);color:var(--accent-ink);letter-spacing:-.02em}
+.inc h3{margin:12px 0 0;font:700 24px/1.1 var(--body);text-transform:uppercase;letter-spacing:.03em}
+.inc p{margin:8px 0 0;font-size:17px;line-height:1.45;color:rgba(102,0,51,.86);max-width:30ch}
+.strip{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;margin-top:52px}
+.strip img{display:block;width:100%;height:auto;aspect-ratio:4/3;object-fit:cover}
+@media (max-width:560px){.strip{gap:8px}}
+
+/* Spaces */
+#spaces{background:var(--bg-deep)}
+#spaces .wrap{padding-top:92px;padding-bottom:96px}
+#spaces .eyebrow{margin:0 0 14px;color:var(--fg-mute)}
+.rooms-ph{display:grid;grid-template-columns:2fr 1fr 1fr;gap:12px;margin-top:44px}
+.rooms-ph img{display:block;width:100%;height:clamp(150px,24vw,300px);object-fit:cover}
+@media (max-width:640px){.rooms-ph{grid-template-columns:1fr 1fr;gap:8px}.rooms-ph img:first-child{grid-column:1/-1}.rooms-ph img{height:44vw}}
+.rooms{list-style:none;margin:44px 0 0;padding:0}
+.rooms li{display:grid;grid-template-columns:1fr;gap:12px 48px;padding:28px 0;border-top:1px solid var(--rule)}
+.rooms li:last-child{border-bottom:1px solid var(--rule)}
+@media (min-width:820px){.rooms li{grid-template-columns:minmax(0,340px) minmax(0,1fr);align-items:start}}
+.rooms h3{margin:0;font:900 clamp(28px,3vw,36px)/1.05 var(--poster);text-transform:uppercase;letter-spacing:.01em}
+.cap{display:inline-flex;align-items:center;min-height:28px;margin-top:12px;padding:3px 14px;border-radius:999px;background:var(--fg);color:var(--bg);font:600 11.5px/1.3 var(--mono);letter-spacing:.12em;text-transform:uppercase}
+.rooms p{margin:0;color:var(--fg-soft);max-width:60ch}
+
+/* Programme */
+#programme .wrap{padding-top:92px;padding-bottom:96px}
+#programme .eyebrow{margin:0 0 14px;color:var(--fg-mute)}
+.opts{list-style:none;margin:44px 0 0;padding:0;display:grid;grid-template-columns:1fr;gap:16px}
+@media (min-width:640px){.opts{grid-template-columns:1fr 1fr}}
+@media (min-width:1080px){.opts{grid-template-columns:repeat(4,1fr)}}
+.opts li{border:1.5px solid rgba(255,252,241,.3);padding:24px 22px 26px;display:flex;flex-direction:column;gap:10px}
+.opts img{height:54px;width:auto;align-self:flex-start;opacity:.9}
+.opts h3{margin:6px 0 0;font:700 24px/1.1 var(--body);text-transform:uppercase;letter-spacing:.03em}
+.opts p{margin:0;font-size:17px;line-height:1.45;color:var(--fg-soft)}
+
+/* Inquiry */
+#inquiry{border-top:3px solid var(--accent);background:var(--bg-deep)}
+#inquiry .wrap{display:grid;grid-template-columns:1fr;gap:44px 64px;padding-top:88px;padding-bottom:96px;align-items:start}
+@media (min-width:940px){#inquiry .wrap{grid-template-columns:minmax(0,.8fr) minmax(0,1.2fr)}}
+#inquiry .intro p.prose{margin:20px 0 0;color:var(--fg-soft);max-width:38ch}
+.direct{margin:32px 0 0;display:flex;flex-direction:column;align-items:flex-start;gap:14px}
+.tel{color:var(--fg);border-bottom:2px solid var(--accent);text-decoration:none;padding:6px 0 3px;font:600 30px/1 var(--body);letter-spacing:.04em;font-variant-numeric:tabular-nums}
+.tel:hover{color:var(--accent);border-color:var(--fg)}
+.direct .line{text-decoration:none;color:var(--fg-soft);overflow-wrap:anywhere}
+.direct .line:hover{color:var(--fg)}
+.card{background:var(--fg);color:var(--bg);padding:28px 22px 24px;box-shadow:8px 10px 0 rgba(0,0,0,.28);position:relative}
+@media (min-width:600px){.card{padding:36px 36px 32px}}
+.field{display:flex;flex-direction:column;gap:6px;margin-bottom:18px;min-width:0}
+.row{display:grid;grid-template-columns:1fr;gap:0 18px}
+@media (min-width:600px){.row{grid-template-columns:1fr 1fr}}
+label,.legend{font:600 12px/1.4 var(--mono);letter-spacing:.14em;text-transform:uppercase;color:rgba(102,0,51,.8)}
+label i{font-style:normal;color:var(--accent-ink)}
+.opt{font:italic 400 14px/1.3 var(--display);letter-spacing:0;text-transform:none;color:rgba(102,0,51,.72)}
+input[type=text],input[type=tel],input[type=email],input[type=date],select,textarea{appearance:none;-webkit-appearance:none;width:100%;background:#fff;color:var(--ink);border:2px solid rgba(102,0,51,.28);border-radius:6px;padding:12px 14px;font:500 19px/1.25 var(--body);min-height:50px}
+select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='10' viewBox='0 0 16 10'%3E%3Cpath d='M1 1l7 7 7-7' fill='none' stroke='%23660033' stroke-width='2.5'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 14px center;padding-right:40px}
+textarea{min-height:104px;resize:vertical}
+input:focus,select:focus,textarea:focus{outline:none;border-color:var(--bg);box-shadow:0 0 0 3px rgba(246,55,25,.25)}
+[aria-invalid="true"]{border-color:var(--accent-ink)!important}
+fieldset{border:0;margin:0 0 18px;padding:0;min-width:0}
+.picks{display:flex;flex-wrap:wrap;gap:8px;margin-top:8px}
+.pick{position:relative;display:inline-flex}
+.pick input{position:absolute;opacity:0;inset:0;width:100%;height:100%;margin:0;cursor:pointer}
+.pick span{display:inline-flex;align-items:center;min-height:44px;padding:0 16px;border:2px solid rgba(102,0,51,.32);border-radius:999px;font:600 17px/1 var(--body);letter-spacing:.04em;text-transform:uppercase;color:var(--bg)}
+.pick input:checked + span{background:var(--bg);border-color:var(--bg);color:var(--fg)}
+.pick input:focus-visible + span{outline:2px solid var(--accent);outline-offset:3px}
+.err{display:none;margin:0 0 16px;padding:12px 14px;border:2px solid var(--accent-ink);color:var(--accent-ink);font:600 16px/1.35 var(--body)}
+.err.show{display:block}
+.card .btn{width:100%;min-height:54px;font-size:20px}
+.small{margin:14px 0 0;font:italic 400 14px/1.4 var(--display);color:rgba(102,0,51,.74)}
+.small a{color:var(--bg)}
+.hp{position:absolute;left:-9999px;top:-9999px;height:0;overflow:hidden}
+.done h3{margin:0 0 14px;font-family:var(--display);font-weight:900;font-style:italic;font-size:clamp(32px,5vw,44px);line-height:1;font-variation-settings:'SOFT' 100,'WONK' 1,'opsz' 144}
+.done p{margin:0 0 12px;font-size:19px;line-height:1.45}
+.done .call a{font:600 26px/1 var(--body);letter-spacing:.04em;text-decoration:none;border-bottom:2px solid var(--accent);white-space:nowrap}
+.done .ref{font:500 12px/1.4 var(--mono);letter-spacing:.14em;text-transform:uppercase;color:rgba(102,0,51,.62);margin:18px 0 0}
+.card .star{position:absolute;right:-18px;top:-24px;width:76px;height:auto;transform:rotate(12deg)}
+@media (max-width:560px){.card .star{right:-6px;top:-22px;width:64px}}
+
+/* Footer */
+footer{background:var(--bg-deep);border-top:1px solid var(--rule);position:relative;z-index:1}
+footer .row2{display:flex;flex-wrap:wrap;justify-content:space-between;align-items:flex-end;gap:28px 48px;padding-top:48px;padding-bottom:30px}
+footer .brand{display:flex;flex-direction:column;gap:10px}
+footer .brand img{width:110px;height:auto;display:block}
+footer .brand .t{color:var(--fg-soft)}
+footer nav{display:flex;flex-wrap:wrap;gap:0 26px}
+footer .legal{display:flex;flex-wrap:wrap;justify-content:space-between;gap:8px 24px;padding-bottom:calc(28px + env(safe-area-inset-bottom,0px));font-size:11px;color:rgba(255,252,241,.58)}
+</style>
+</head>
+<body>
+<a class="skip" href="#inquiry" data-i18n="skip">Към запитването</a>
+<div class="grain" aria-hidden="true"></div>
+
+<header class="wrap top">
+  <a class="home" href="/" aria-label="SWING"><img src="assets/logo-cream.svg" alt="SWING" width="118" height="33"></a>
+  <nav aria-label="Main" class="mono">
+    <a class="navlink hide-s" href="#spaces" data-i18n="nav_spaces">Пространства</a>
+    <a class="navlink hide-s" href="/#program" data-i18n="nav_program">Програма</a>
+    <a class="navlink chip-fill" href="#inquiry" data-i18n="nav_inquiry">Запитване</a>
+    <span class="lang" role="group" aria-label="Language">
+      <button type="button" data-lang="bg" aria-pressed="true" lang="bg">БГ</button>
+      <button type="button" data-lang="en" aria-pressed="false" lang="en">EN</button>
+    </span>
+  </nav>
+</header>
+
+<main>
+  <section class="wrap hero" aria-labelledby="h1">
+    <div>
+      <p class="mono eyebrow" data-i18n="eyebrow">Фирмени партита · Декември 2026 · София</p>
+      <h1 id="h1" data-i18n="h1">Фирмено парти в Swing.</h1>
+      <p class="kick" data-i18n="kick">Коледно парти за екипа.</p>
+      <p class="prose lead" data-i18n="lead">Swing е сцена с над 30-годишна история в сърцето на София. През декември предоставяме цялото заведение ексклузивно за вашия екип - три пространства с различен характер, професионално озвучение и хора, които се грижат за всичко, докато вие и колегите ви се наслаждавате на вечерта.</p>
+      <div class="ctas">
+        <a class="btn btn-cream" href="#inquiry" data-i18n="cta">Запазете дата</a>
+        <a class="mono call" href="tel:+359896840161"><span data-i18n="or_call">или се обадете</span><b>089 684 0161</b></a>
+      </div>
+    </div>
+    <figure class="shot">
+      <img class="star" src="assets/starburst.svg" alt="" aria-hidden="true">
+      <span class="star-txt" aria-hidden="true">LIVE</span>
+      <div class="frame">
+        <img class="ph" src="assets/parties/stage.jpg" width="1400" height="1059" alt="Сцената на Swingin' Hall" data-i18n-alt="alt_stage" fetchpriority="high">
+        <figcaption class="mono"><span>Swingin' Hall</span><span data-i18n="shot_cap">Основната сцена</span></figcaption>
+      </div>
+    </figure>
+  </section>
+
+  <div class="ticker" aria-hidden="true"><div class="tick" id="tick"></div></div>
+
+  <section id="included" aria-labelledby="inc-h">
+    <div class="wrap">
+      <p class="mono eyebrow" data-i18n="inc_eyebrow">Цялото заведение, само за вас</p>
+      <h2 class="h2" id="inc-h" data-i18n="inc_h">Включено за вашето събитие</h2>
+      <ol class="inc">
+        <li><div class="n" aria-hidden="true">01</div><h3 data-i18n="inc1_h">Ексклузивно ползване</h3><p data-i18n="inc1_p">Цялото заведение и трите му пространства.</p></li>
+        <li><div class="n" aria-hidden="true">02</div><h3 data-i18n="inc2_h">Персонал</h3><p data-i18n="inc2_p">Барман и сервиз за вашето събитие.</p></li>
+        <li><div class="n" aria-hidden="true">03</div><h3 data-i18n="inc3_h">Звуков инженер</h3><p data-i18n="inc3_p">При нужда - за музика на живо или DJ.</p></li>
+        <li><div class="n" aria-hidden="true">04</div><h3 data-i18n="inc4_h">Професионално озвучение</h3><p data-i18n="inc4_p">Custom PA система.</p></li>
+      </ol>
+      <div class="strip">
+        <img src="assets/parties/bar.jpg" width="652" height="472" loading="lazy" alt="Барът на Swing" data-i18n-alt="alt_bar">
+        <img src="assets/parties/entrance.jpg" width="655" height="472" loading="lazy" alt="Входът на Swing" data-i18n-alt="alt_entrance">
+        <img src="assets/parties/corner.jpg" width="652" height="472" loading="lazy" alt="Маси до сцената, украсени със светлини" data-i18n-alt="alt_corner">
+      </div>
+    </div>
+  </section>
+
+  <section id="spaces" aria-labelledby="sp-h">
+    <div class="wrap">
+      <p class="mono eyebrow" data-i18n="sp_eyebrow">Пространствата</p>
+      <h2 class="h2" id="sp-h" data-i18n="sp_h">Три пространства, един дух</h2>
+      <div class="rooms-ph">
+        <img src="assets/parties/room-1.jpg" width="990" height="428" loading="lazy" alt="Ниша с дивани зад кръгъл отвор в тухлената стена" data-i18n-alt="alt_room1">
+        <img src="assets/parties/room-2.jpg" width="487" height="428" loading="lazy" alt="Зала с високи маси и синьо осветление" data-i18n-alt="alt_room2">
+        <img src="assets/parties/room-3.jpg" width="485" height="428" loading="lazy" alt="Бар под червен свод" data-i18n-alt="alt_room3">
+      </div>
+      <ul class="rooms">
+        <li>
+          <div><h3>Swingin' Hall</h3><span class="cap" data-i18n="sp1_cap">Основна сцена · 100+ седящи</span></div>
+          <p class="prose" data-i18n="sp1_p">Духът на мястото - сцена с над 30-годишна история, от която са тръгнали голяма част от успешните български артисти. Подходяща за голяма банда с музика на живо или DJ програма.</p>
+        </li>
+        <li>
+          <div><h3>Lounge</h3><span class="cap" data-i18n="sp2_cap">до 50 души</span></div>
+          <p class="prose" data-i18n="sp2_p">Спокойна обстановка с малка сцена, дивани и фонова музика - перфектно място за акустичен концерт при желание.</p>
+        </li>
+        <li>
+          <div><h3>Backstage</h3><span class="cap" data-i18n="sp3_cap">80 правостоящи</span></div>
+          <p class="prose" data-i18n="sp3_p">Гъвкаво пространство, което може да се пригоди като пушалня или за парти.</p>
+        </li>
+      </ul>
+    </div>
+  </section>
+
+  <section id="programme" aria-labelledby="pr-h">
+    <div class="wrap">
+      <p class="mono eyebrow" data-i18n="pr_eyebrow">Музика и кетъринг</p>
+      <h2 class="h2" id="pr-h" data-i18n="pr_h">Програма по ваш избор</h2>
+      <ul class="opts">
+        <li><img src="assets/sax.svg" alt="" aria-hidden="true"><h3 data-i18n="pr1_h">Банда с музика на живо</h3><p data-i18n="pr1_p">Изпращаме ви различни варианти за музикално оформление.</p></li>
+        <li><img src="assets/maracas.svg" alt="" aria-hidden="true"><h3 data-i18n="pr2_h">DJ</h3><p data-i18n="pr2_p">DJ програма за вашето събитие.</p></li>
+        <li><img src="assets/trombone.svg" alt="" aria-hidden="true"><h3 data-i18n="pr3_h">Акустичен концерт</h3><p data-i18n="pr3_p">На малката сцена в Lounge - при желание.</p></li>
+        <li><img src="assets/horn.svg" alt="" aria-hidden="true"><h3 data-i18n="pr4_h">Кетъринг</h3><p data-i18n="pr4_p">Чрез нашия кетъринг партньор - меню при запитване.</p></li>
+      </ul>
+    </div>
+  </section>
+
+  <section id="inquiry" aria-labelledby="inq-h">
+    <div class="wrap">
+      <div class="intro">
+        <h2 class="h2" id="inq-h" data-i18n="inq_h">Запазете дата за декември</h2>
+        <p class="prose" data-i18n="inq_p">Пишете ни за свободни дати, меню с напитки и музикална програма.</p>
+        <div class="direct">
+          <a class="tel" href="tel:+359896840161">089 684 0161</a>
+          <a class="mono line" href="mailto:swing.sofia95@gmail.com" id="mailto">swing.sofia95@gmail.com</a>
+          <a class="mono line" href="#" id="maps" target="_blank" rel="noopener"><span data-i18n="address">бул. „Драган Цанков“ 8, София</span> ↗</a>
+        </div>
+      </div>
+
+      <div>
+        <form class="card" id="form" novalidate>
+          <img class="star" src="assets/starburst.svg" alt="" aria-hidden="true">
+          <div class="err" id="err" role="alert"></div>
+
+          <div class="row">
+            <div class="field">
+              <label for="name"><span data-i18n="f_name">Име и фамилия</span> <i>*</i></label>
+              <input id="name" name="name" type="text" autocomplete="name" maxlength="80" required>
+            </div>
+            <div class="field">
+              <label for="company"><span data-i18n="f_company">Фирма</span> <i>*</i></label>
+              <input id="company" name="company" type="text" autocomplete="organization" maxlength="100" required>
+            </div>
+          </div>
+
+          <div class="row">
+            <div class="field">
+              <label for="email"><span data-i18n="f_email">Имейл</span> <i>*</i></label>
+              <input id="email" name="email" type="email" inputmode="email" autocomplete="email" maxlength="120" required>
+            </div>
+            <div class="field">
+              <label for="phone"><span data-i18n="f_phone">Телефон</span> <i>*</i></label>
+              <input id="phone" name="phone" type="tel" inputmode="tel" autocomplete="tel" maxlength="30" placeholder="08x xxx xxxx" required>
+            </div>
+          </div>
+
+          <div class="row">
+            <div class="field">
+              <label for="guests"><span data-i18n="f_guests">Брой гости</span> <i>*</i></label>
+              <select id="guests" name="guests" required></select>
+            </div>
+            <div class="field">
+              <label for="date"><span data-i18n="f_date">Предпочитана дата</span> <span class="opt" data-i18n="optional">(по желание)</span></label>
+              <input id="date" name="date" type="date">
+            </div>
+          </div>
+
+          <fieldset>
+            <span class="legend" id="prog-legend"><span data-i18n="f_program">Какво ви интересува</span> <span class="opt" data-i18n="optional">(по желание)</span></span>
+            <div class="picks" role="group" aria-labelledby="prog-legend">
+              <label class="pick"><input type="checkbox" name="program" value="band"><span data-i18n="p_band">Банда на живо</span></label>
+              <label class="pick"><input type="checkbox" name="program" value="dj"><span data-i18n="p_dj">DJ</span></label>
+              <label class="pick"><input type="checkbox" name="program" value="acoustic"><span data-i18n="p_acoustic">Акустичен концерт</span></label>
+              <label class="pick"><input type="checkbox" name="program" value="catering"><span data-i18n="p_catering">Кетъринг</span></label>
+            </div>
+          </fieldset>
+
+          <div class="field">
+            <label for="message"><span data-i18n="f_message">Разкажете ни повече</span> <span class="opt" data-i18n="optional">(по желание)</span></label>
+            <textarea id="message" name="message" maxlength="1500" data-i18n-placeholder="ph_message" placeholder="Алтернативни дати, начален час, повод, специални изисквания…"></textarea>
+          </div>
+
+          <div class="hp" aria-hidden="true"><label for="website">Website</label><input id="website" name="website" type="text" tabindex="-1" autocomplete="off"></div>
+
+          <button class="btn btn-burg" type="submit" id="submit" data-i18n="submit">Изпратете запитване</button>
+          <p class="small"><span data-i18n="consent">Използваме тези данни само за да отговорим на запитването ви.</span> <a href="privacy.html" data-i18n="privacy">Поверителност</a></p>
+        </form>
+
+        <div class="card done" id="done" hidden aria-live="polite" tabindex="-1">
+          <img class="star" src="assets/starburst.svg" alt="" aria-hidden="true">
+          <h3 data-i18n="done_h">Получихме запитването ви.</h3>
+          <p data-i18n="done_p">Ще се свържем с вас възможно най-скоро със свободни дати и варианти за програмата.</p>
+          <p class="call"><span data-i18n="done_call">Бързате? Обадете се:</span> <a href="tel:+359896840161">089 684 0161</a></p>
+          <p class="ref"><span data-i18n="ref">Номер</span> <span id="d-ref"></span></p>
+        </div>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer>
+  <div class="wrap row2">
+    <div class="brand">
+      <img src="assets/logo-cream.svg" alt="SWING" width="110" height="31">
+      <span class="mono t" data-i18n="tagline">Най-старата действаща джаз и рок сцена в града.</span>
+    </div>
+    <nav aria-label="Footer" class="mono">
+      <a class="navlink" href="/" data-i18n="nav_home">Начало</a>
+      <a class="navlink" href="/#program" data-i18n="nav_program">Програма</a>
+      <a class="navlink" href="https://menu.swingsofia.com" data-i18n="nav_menu">Меню ↗</a>
+      <a class="navlink" href="/reserve" data-i18n="nav_reserve">Запази маса</a>
+    </nav>
+  </div>
+  <div class="wrap legal mono">
+    <span>© <span id="year"></span> SWING · <span data-i18n="city">София</span></span>
+    <span>swingsofia.com · <a href="privacy.html" data-i18n="privacy">Поверителност</a></span>
+  </div>
+</footer>
+
+<script>
+(function () {
+  var MAPS_URL = "https://www.google.com/maps/place/Swingin'+Hall/@42.6832857,23.3340778,771m/data=!3m2!1e3!4b1!4m6!3m5!1s0x40aa85a6d0febf13:0xb31fa060558ce037!8m2!3d42.6832857!4d23.3340778!16s%2Fg%2F1tk6y_cm?entry=ttu";
+  var PHONE = '089 684 0161';
+
+  /* All copy, in both languages. Bulgarian is the default on this page (the campaigns are Bulgarian);
+     the page follows the visitor's saved EN/БГ choice from the rest of the site, or ?lang=en in the link. */
+  var T = {
+    bg: {
+      title: 'Фирмено парти в SWING - коледно парти за екипа в София',
+      skip: 'Към запитването', privacy: 'Поверителност', city: 'София',
+      nav_spaces: 'Пространства', nav_program: 'Програма', nav_inquiry: 'Запитване', nav_home: 'Начало', nav_menu: 'Меню ↗', nav_reserve: 'Запази маса',
+      tagline: 'Най-старата действаща джаз и рок сцена в града.',
+      eyebrow: 'Фирмени партита · Декември 2026 · София',
+      h1: 'Фирмено парти в Swing.',
+      kick: 'Коледно парти за екипа.',
+      lead: 'Swing е сцена с над 30-годишна история в сърцето на София. През декември предоставяме цялото заведение ексклузивно за вашия екип - три пространства с различен характер, професионално озвучение и хора, които се грижат за всичко, докато вие и колегите ви се наслаждавате на вечерта.',
+      cta: 'Запазете дата', or_call: 'или се обадете', shot_cap: 'Основната сцена',
+      ticker: ['Ексклузивно ползване', 'Три пространства', 'Музика на живо', 'DJ', 'Акустичен концерт', 'Кетъринг', 'Професионално озвучение', 'Сцена от 1995'],
+      inc_eyebrow: 'Цялото заведение, само за вас', inc_h: 'Включено за вашето събитие',
+      inc1_h: 'Ексклузивно ползване', inc1_p: 'Цялото заведение и трите му пространства.',
+      inc2_h: 'Персонал', inc2_p: 'Барман и сервиз за вашето събитие.',
+      inc3_h: 'Звуков инженер', inc3_p: 'При нужда - за музика на живо или DJ.',
+      inc4_h: 'Професионално озвучение', inc4_p: 'Custom PA система.',
+      sp_eyebrow: 'Пространствата', sp_h: 'Три пространства, един дух',
+      sp1_cap: 'Основна сцена · 100+ седящи', sp1_p: 'Духът на мястото - сцена с над 30-годишна история, от която са тръгнали голяма част от успешните български артисти. Подходяща за голяма банда с музика на живо или DJ програма.',
+      sp2_cap: 'до 50 души', sp2_p: 'Спокойна обстановка с малка сцена, дивани и фонова музика - перфектно място за акустичен концерт при желание.',
+      sp3_cap: '80 правостоящи', sp3_p: 'Гъвкаво пространство, което може да се пригоди като пушалня или за парти.',
+      pr_eyebrow: 'Музика и кетъринг', pr_h: 'Програма по ваш избор',
+      pr1_h: 'Банда с музика на живо', pr1_p: 'Изпращаме ви различни варианти за музикално оформление.',
+      pr2_h: 'DJ', pr2_p: 'DJ програма за вашето събитие.',
+      pr3_h: 'Акустичен концерт', pr3_p: 'На малката сцена в Lounge - при желание.',
+      pr4_h: 'Кетъринг', pr4_p: 'Чрез нашия кетъринг партньор - меню при запитване.',
+      inq_h: 'Запазете дата за декември', inq_p: 'Пишете ни за свободни дати, меню с напитки и музикална програма.',
+      address: 'бул. „Драган Цанков“ 8, София',
+      f_name: 'Име и фамилия', f_company: 'Фирма', f_email: 'Имейл', f_phone: 'Телефон', f_guests: 'Брой гости', f_date: 'Предпочитана дата',
+      f_program: 'Какво ви интересува', f_message: 'Разкажете ни повече', optional: '(по желание)',
+      p_band: 'Банда на живо', p_dj: 'DJ', p_acoustic: 'Акустичен концерт', p_catering: 'Кетъринг',
+      ph_message: 'Алтернативни дати, начален час, повод, специални изисквания…',
+      g_pick: 'Изберете…', g: { 'under-30': 'до 30', '30-60': '30 - 60', '60-100': '60 - 100', '100-150': '100 - 150', '150-plus': 'над 150' },
+      submit: 'Изпратете запитване', sending: 'Изпращаме…', consent: 'Използваме тези данни само за да отговорим на запитването ви.',
+      e_name: 'Моля, напишете името си.', e_company: 'Моля, напишете името на фирмата.', e_email: 'Имейлът не изглежда наред.', e_phone: 'Моля, оставете телефон за връзка.', e_guests: 'Изберете приблизителен брой гости.', e_date: 'Датата е в миналото.',
+      e_rate: 'Твърде много запитвания от това устройство. Моля, обадете се на ' + PHONE + '.', e_delivery: 'Нещо се обърка при нас. Моля, обадете се на ' + PHONE + ' или пишете на swing.sofia95@gmail.com.', e_net: 'Няма връзка. Опитайте пак или се обадете на ' + PHONE + '.',
+      done_h: 'Получихме запитването ви.', done_p: 'Ще се свържем с вас възможно най-скоро със свободни дати и варианти за програмата.', done_call: 'Бързате? Обадете се:', ref: 'Номер',
+      alt_stage: 'Сцената на Swingin’ Hall', alt_bar: 'Барът на Swing', alt_entrance: 'Входът на Swing', alt_corner: 'Маси до сцената, украсени със светлини',
+      alt_room1: 'Ниша с дивани зад кръгъл отвор в тухлената стена', alt_room2: 'Зала с високи маси и синьо осветление', alt_room3: 'Бар под червен свод',
+      mail_subject: 'Запитване за фирмено парти'
+    },
+    en: {
+      title: 'Company parties at SWING - your team’s Christmas party in Sofia',
+      skip: 'Skip to the inquiry form', privacy: 'Privacy', city: 'Sofia',
+      nav_spaces: 'Spaces', nav_program: 'Program', nav_inquiry: 'Inquire', nav_home: 'Home', nav_menu: 'Menu ↗', nav_reserve: 'Book a table',
+      tagline: 'The oldest standing jazz & rock stage in town.',
+      eyebrow: 'Company parties · December 2026 · Sofia',
+      h1: 'Your company party at Swing.',
+      kick: 'The Christmas party for your team.',
+      lead: 'Swing is a stage with more than 30 years of history in the heart of Sofia. In December the whole venue is exclusively yours - three spaces, each with its own character, professional sound and a crew that takes care of everything while you and your colleagues enjoy the night.',
+      cta: 'Save a date', or_call: 'or call', shot_cap: 'The main stage',
+      ticker: ['Exclusive use', 'Three spaces', 'Live music', 'DJ', 'Acoustic set', 'Catering', 'Professional sound', 'A stage since 1995'],
+      inc_eyebrow: 'The whole venue, just for you', inc_h: 'Included with your event',
+      inc1_h: 'Exclusive use', inc1_p: 'The whole venue and all three of its spaces.',
+      inc2_h: 'Staff', inc2_p: 'Bartender and table service for your event.',
+      inc3_h: 'Sound engineer', inc3_p: 'When needed - for live music or a DJ.',
+      inc4_h: 'Professional sound', inc4_p: 'Custom PA system.',
+      sp_eyebrow: 'The spaces', sp_h: 'Three spaces, one spirit',
+      sp1_cap: 'Main stage · 100+ seated', sp1_p: 'The spirit of the place - a stage with more than 30 years of history, where many of Bulgaria’s successful artists got their start. Right for a full live band or a DJ night.',
+      sp2_cap: 'up to 50 guests', sp2_p: 'A relaxed room with a small stage, sofas and background music - the perfect spot for an acoustic set, if you’d like one.',
+      sp3_cap: '80 standing', sp3_p: 'A flexible space that can be set up as a smoking room or for the party itself.',
+      pr_eyebrow: 'Music and catering', pr_h: 'A programme of your choice',
+      pr1_h: 'Live band', pr1_p: 'We send you several options for the music.',
+      pr2_h: 'DJ', pr2_p: 'A DJ set for your event.',
+      pr3_h: 'Acoustic set', pr3_p: 'On the small stage in the Lounge - if you’d like one.',
+      pr4_h: 'Catering', pr4_p: 'Through our catering partner - menu on request.',
+      inq_h: 'Save a date for December', inq_p: 'Write to us for available dates, the drinks menu and the music programme.',
+      address: 'bul. Dragan Tsankov 8, Sofia',
+      f_name: 'Name and surname', f_company: 'Company', f_email: 'Email', f_phone: 'Phone', f_guests: 'Number of guests', f_date: 'Preferred date',
+      f_program: 'What you’re interested in', f_message: 'Tell us more', optional: '(optional)',
+      p_band: 'Live band', p_dj: 'DJ', p_acoustic: 'Acoustic set', p_catering: 'Catering',
+      ph_message: 'Alternative dates, start time, the occasion, special requests…',
+      g_pick: 'Choose…', g: { 'under-30': 'up to 30', '30-60': '30 - 60', '60-100': '60 - 100', '100-150': '100 - 150', '150-plus': 'over 150' },
+      submit: 'Send the inquiry', sending: 'Sending…', consent: 'We use these details only to answer your inquiry.',
+      e_name: 'Please tell us your name.', e_company: 'Please tell us the company name.', e_email: 'That email doesn’t look right.', e_phone: 'Please leave a phone number.', e_guests: 'Choose an approximate number of guests.', e_date: 'That date is in the past.',
+      e_rate: 'Too many inquiries from this device. Please call ' + PHONE + '.', e_delivery: 'Something went wrong on our side. Please call ' + PHONE + ' or write to swing.sofia95@gmail.com.', e_net: 'No connection. Try again, or call ' + PHONE + '.',
+      done_h: 'We’ve got your inquiry.', done_p: 'We’ll get back to you as soon as we can with available dates and options for the programme.', done_call: 'In a hurry? Call us:', ref: 'Ref',
+      alt_stage: 'The stage at Swingin’ Hall', alt_bar: 'The bar at Swing', alt_entrance: 'The entrance to Swing', alt_corner: 'Tables by the stage, dressed in fairy lights',
+      alt_room1: 'A sofa nook behind a round opening in the brick wall', alt_room2: 'A room with high tables in blue light', alt_room3: 'The bar under a red arch',
+      mail_subject: 'Company party inquiry'
+    }
+  };
+  var GUESTS = ['under-30', '30-60', '60-100', '100-150', '150-plus'];
+
+  var $ = function (s) { return document.querySelector(s); };
+  var $$ = function (s) { return Array.prototype.slice.call(document.querySelectorAll(s)); };
+  var esc = function (s) { return String(s).replace(/[&<>"]/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]; }); };
+  var pad2 = function (n) { return (n < 10 ? '0' : '') + n; };
+
+  var q = null; try { q = new URLSearchParams(location.search); } catch (e) {}
+  var lang = 'bg';
+  try {
+    var saved = localStorage.getItem('swing-lang'), asked = q && q.get('lang');
+    if (asked === 'en' || asked === 'bg') lang = asked;
+    else if (saved === 'en' || saved === 'bg') lang = saved;
+  } catch (e) {}
+
+  // Campaign tags from the link (?utm_source=…), passed along with the inquiry so the venue sees which campaign it came from.
+  var source = '';
+  try {
+    source = ['utm_source', 'utm_medium', 'utm_campaign', 'utm_content'].map(function (k) { return q && q.get(k) ? q.get(k) : ''; }).filter(Boolean).join(' / ').slice(0, 160);
+    if (source) sessionStorage.setItem('swing-src', source); else source = sessionStorage.getItem('swing-src') || '';
+  } catch (e) {}
+
+  var startedAt = Date.now();
+
+  function fillGuests() {
+    var sel = $('#guests'), t = T[lang], keep = sel.value;
+    sel.innerHTML = '';
+    var ph = document.createElement('option'); ph.value = ''; ph.textContent = t.g_pick; ph.disabled = true; sel.appendChild(ph);
+    GUESTS.forEach(function (k) { var o = document.createElement('option'); o.value = k; o.textContent = t.g[k]; sel.appendChild(o); });
+    sel.value = keep || ''; if (!sel.value) ph.selected = true;
+  }
+
+  function applyCopy() {
+    var t = T[lang];
+    document.documentElement.lang = lang;
+    document.title = t.title;
+    $$('[data-i18n]').forEach(function (el) { var k = el.getAttribute('data-i18n'); if (t[k] != null) el.textContent = t[k]; });
+    $$('[data-i18n-alt]').forEach(function (el) { var k = el.getAttribute('data-i18n-alt'); if (t[k] != null) el.alt = t[k]; });
+    $$('[data-i18n-placeholder]').forEach(function (el) { var k = el.getAttribute('data-i18n-placeholder'); if (t[k] != null) el.placeholder = t[k]; });
+    $$('.lang button').forEach(function (b) { b.setAttribute('aria-pressed', b.getAttribute('data-lang') === lang ? 'true' : 'false'); });
+    var items = t.ticker.map(function (x) { return '<span class="item"><span>' + esc(x) + '</span><i>★</i></span>'; }).join('');
+    $('#tick').innerHTML = items + items + items + items;
+    $('#mailto').href = 'mailto:swing.sofia95@gmail.com?subject=' + encodeURIComponent(t.mail_subject);
+    fillGuests();
+  }
+  function setLang(l) { lang = l; try { localStorage.setItem('swing-lang', l); } catch (e) {} applyCopy(); }
+
+  function showError(key, detail) { var t = T[lang], el = $('#err'); el.textContent = (t['e_' + key] || t.e_delivery) + (detail ? ' (' + detail + ')' : ''); el.className = 'err show'; el.scrollIntoView({ block: 'center', behavior: 'smooth' }); }
+  function clearError() { $('#err').className = 'err'; $$('[aria-invalid]').forEach(function (el) { el.removeAttribute('aria-invalid'); }); }
+  function invalid(id, key) { var el = $('#' + id); el.setAttribute('aria-invalid', 'true'); showError(key); el.focus(); return false; }
+
+  function collect() {
+    var name = $('#name').value.trim(); if (name.length < 2) return invalid('name', 'name');
+    var company = $('#company').value.trim(); if (company.length < 2) return invalid('company', 'company');
+    var email = $('#email').value.trim(); if (!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(email)) return invalid('email', 'email');
+    var phone = $('#phone').value.trim(); if (!/^[+\d][\d\s().-]{5,}$/.test(phone)) return invalid('phone', 'phone');
+    var guests = $('#guests').value; if (GUESTS.indexOf(guests) < 0) return invalid('guests', 'guests');
+    var date = $('#date').value; if (date && date < $('#date').min) return invalid('date', 'date');
+    var program = $$('input[name="program"]:checked').map(function (c) { return c.value; });
+    return { name: name, company: company, email: email, phone: phone, guests: guests, date: date, program: program,
+      message: $('#message').value.trim(), website: $('#website').value, elapsed: Date.now() - startedAt, lang: lang, source: source };
+  }
+
+  function done(data, ref) {
+    $('#d-ref').textContent = ref;
+    $('#form').hidden = true; var d = $('#done'); d.hidden = false; d.focus({ preventScroll: true });
+    d.scrollIntoView({ block: 'center', behavior: 'smooth' });
+    try { if (window.fbq) window.fbq('track', 'Lead', { content_name: 'Company party inquiry', content_category: data.guests }); } catch (e) {}
+    try { if (window.gtag) window.gtag('event', 'generate_lead', { form: 'party_inquiry', guests: data.guests }); } catch (e) {}
+  }
+
+  $('#form').addEventListener('submit', function (e) {
+    e.preventDefault(); clearError();
+    var data = collect(); if (!data) return;
+    var btn = $('#submit'); btn.disabled = true; btn.textContent = T[lang].sending;
+    // The server ignores forms filled in under 3 seconds (bots). A fast human just waits the remainder.
+    var wait = Math.max(0, 3200 - (Date.now() - startedAt));
+    new Promise(function (ok) { setTimeout(ok, wait); }).then(function () {
+      data.elapsed = Date.now() - startedAt;
+      return fetch('/api/inquiry', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(data) })
+        .then(function (r) { return r.json().then(function (j) { return { status: r.status, body: j }; }); })
+        .then(function (res) {
+          if (res.body && res.body.ok) return done(data, res.body.ref || '');
+          var code = (res.body && res.body.error) || ('http ' + res.status);
+          showError(code === 'rate' ? 'rate' : (res.status >= 500 ? 'delivery' : code), T[lang]['e_' + code] ? '' : code);
+        })
+        .catch(function (e) { showError('net', e && e.message ? e.message.slice(0, 60) : ''); })
+        .then(function () { btn.disabled = false; btn.textContent = T[lang].submit; });
+    });
+  });
+
+  $$('.lang button').forEach(function (b) { b.addEventListener('click', function () { setLang(b.getAttribute('data-lang')); }); });
+  var n = new Date(); $('#date').min = n.getFullYear() + '-' + pad2(n.getMonth() + 1) + '-' + pad2(n.getDate());
+  $('#maps').href = MAPS_URL;
+  $('#year').textContent = String(n.getFullYear());
+  applyCopy();
+})();
+</script>
+<script src="assets/tracking.js" defer></script>
+</body>
+</html>

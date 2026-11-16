@@ -26,6 +26,14 @@ If the page shows a red "program.js has a typo" box, a comma or quote went missi
 
 Every booking lands in the `#reservations` Discord channel (one message per show, kept current) with a **cancel** link for staff that frees the seats. The bits behind it: `api/reserve.js`, `api/availability.js`, `api/cancel.js`, `lib/capacity.js`; keys in Vercel → Environment Variables (`RESEND_API_KEY`, `DISCORD_WEBHOOK_URL`, the `KV_*` ones from the Upstash store, `ADMIN_KEY`).
 
+## Company parties page
+
+`/parties` (`parties.html`) is the landing page for the email and ad campaigns: the offer, the three spaces, the programme options and an inquiry form. Bulgarian by default, English with the switch or `?lang=en` in the link. All copy is in the `T` dictionary at the bottom of the file; photos are in `assets/parties/`.
+
+The form posts to `api/inquiry.js`, which emails the venue inbox (reply goes straight to the person who asked), sends them a short "we got it" copy, and drops a card in the reservations Discord channel (set `INQUIRY_DISCORD_WEBHOOK_URL` in Vercel to use another channel). `utm_source` / `utm_medium` / `utm_campaign` / `utm_content` from the campaign link arrive with the inquiry as "Campaign". A sent inquiry fires the Meta `Lead` event.
+
+The homepage points to it from two temporary places, both marked `TEMP: company-parties promo` in `index.html`: the cream bar above the header and the link under "Book the place". The comment in the CSS lists what to delete when the campaign is over.
+
 ## Everything else
 
 - `index.html` — layout, styles, copy in English and Bulgarian, and the script that draws the program. The `CONFIG` block at the top of the script holds the phone number, Google Maps link, and the (currently empty) email, Instagram, Facebook and stage-photo fields: fill a field and the matching link or image appears.

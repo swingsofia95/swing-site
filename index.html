@@ -78,6 +78,15 @@ section{scroll-margin-top:12px}
 .btn-burg{border:2px solid var(--bg);color:var(--bg)}
 .btn-burg:hover{background:var(--bg);color:var(--fg)}
 
+/* TEMP: company-parties promo (bar above the header + link in "Book the place"). To remove it:
+   delete this rule block, the <a class="promo"> right after <body>, the <a class="more"> in #contact,
+   and the promo_* / c2_more lines in the T dictionary. The page itself lives at /parties. */
+.promo{position:relative;z-index:2;display:flex;flex-wrap:wrap;align-items:center;justify-content:center;gap:4px 14px;background:var(--fg);color:var(--bg);border-bottom:3px solid var(--accent);text-decoration:none;text-align:center;padding:calc(10px + env(safe-area-inset-top,0px)) max(16px,env(safe-area-inset-right,0px)) 10px max(16px,env(safe-area-inset-left,0px));font:600 17px/1.25 var(--body);letter-spacing:.02em}
+.promo:hover{text-decoration:none;background:#fff}
+.promo .go{font:600 12px/1.4 var(--mono);letter-spacing:.14em;text-transform:uppercase;border-bottom:2px solid var(--accent);padding-bottom:1px;white-space:nowrap}
+.more{display:inline-block;margin-top:16px;text-decoration:none;border-bottom:2px solid var(--accent);padding:6px 0 3px}
+.more:hover{text-decoration:none;color:var(--accent);border-color:var(--fg)}
+
 /* Top bar */
 .top{display:flex;align-items:center;justify-content:space-between;gap:12px 32px;flex-wrap:wrap;padding-top:calc(18px + env(safe-area-inset-top,0px));padding-bottom:14px}
 .top .home{display:block;flex:0 0 auto;padding:8px 0}
@@ -210,6 +219,9 @@ footer .legal{display:flex;flex-wrap:wrap;justify-content:space-between;gap:8px 
 <!-- The date-blob outline, traced from the poster's own transparent export. Used as a clip-path on every day pill. -->
 <svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false"><defs><clipPath id="blob" clipPathUnits="objectBoundingBox"><path d="M.107 .194Q.068 .247 .048 .289Q.029 .331 .019 .366Q.010 .401 .010 .429Q.010 .456 .005 .461Q.000 .465 .000 .517Q.000 .568 .005 .573Q.010 .577 .014 .622Q.019 .667 .039 .715Q.058 .763 .092 .810Q.126 .858 .169 .892Q.212 .927 .246 .945Q.281 .964 .342 .975Q.402 .987 .406 .993Q.410 .999 .499 .999Q.589 .999 .593 .993Q.596 .987 .619 .987Q.642 .987 .689 .969Q.737 .952 .776 .928Q.815 .904 .849 .875Q.882 .846 .921 .787Q.960 .728 .979 .666Q.999 .603 .999 .511Q.999 .419 .970 .333Q.940 .247 .883 .177Q.825 .106 .776 .076Q.727 .047 .680 .029Q.632 .012 .530 .006Q.429 .000 .425 .006Q.421 .012 .399 .012Q.376 .012 .329 .029Q.281 .047 .213 .094Q.145 .141 .107 .194Z"></path></clipPath></defs></svg>
 
+<!-- TEMP: company-parties promo -->
+<a class="promo" href="/parties"><span data-i18n="promo">Planning the company Christmas party? The whole venue, just for your team.</span> <span class="go" data-i18n="promo_go">See how →</span></a>
+
 <header class="wrap top">
   <a class="home" href="#top" id="top" aria-label="SWING — home"><img src="assets/logo-cream.svg" alt="SWING" width="118" height="33"></a>
   <nav aria-label="Main" class="mono">
@@ -307,6 +319,7 @@ footer .legal{display:flex;flex-wrap:wrap;justify-content:space-between;gap:8px 
         <p class="sub" data-i18n="c2_p">Private parties, company nights, birthdays with a band. The stage comes with the room.</p>
         <a class="tel" href="#" data-tel data-phone></a>
         <a class="mail" href="#" data-mail></a>
+        <!-- TEMP: company-parties promo --><br><a class="more mono" href="/parties" data-i18n="c2_more">Company parties - the details →</a>
       </div>
       <div>
         <h2 class="disp" data-i18n="c3_h">Play here.</h2>
@@ -385,6 +398,7 @@ footer .legal{display:flex;flex-wrap:wrap;justify-content:space-between;gap:8px 
       find_us: 'Find us ↗', photo_soon: 'Stage photo coming soon',
       c1_h: 'Make a reservation.', c1_p: 'Book online in a minute. Pick the night, say how many of you, done.',
       c2_h: 'Book the place.', c2_p: 'Private parties, company nights, birthdays with a band. The stage comes with the room.',
+      promo: 'Planning the company Christmas party? The whole venue, just for your team.', promo_go: 'See how →', c2_more: 'Company parties - the details →',
       c3_h: 'Play here.', c3_p: 'Bands and solo acts: call us about a slot. We listen to everything. Eventually.',
       empty_act: 'New program coming soon', empty_sub: 'Watch this space — or call.', empty_stats: 'Next month\u2019s program coming soon',
       err: 'The program couldn\u2019t load. <code>program.js</code> probably has a typo (a missing comma or quote). The last good version is on GitHub — restore it, or ask Claude to fix the line.',
@@ -408,6 +422,7 @@ footer .legal{display:flex;flex-wrap:wrap;justify-content:space-between;gap:8px 
       find_us: 'Намери ни ↗', photo_soon: 'Снимка от сцената — скоро',
       c1_h: 'Резервирай маса.', c1_p: 'Резервирай онлайн за минута. Избери вечерта, кажи колко сте, готово.',
       c2_h: 'Наеми мястото.', c2_p: 'Частни партита, фирмени вечери, рождени дни с група. Сцената върви с помещението.',
+      promo: 'Коледно фирмено парти? Цялото заведение, само за вашия екип.', promo_go: 'Вижте как →', c2_more: 'Фирмени партита - подробности →',
       c3_h: 'Свири тук.', c3_p: 'Групи и солови изпълнители: обади се за дата. Слушаме всичко. Рано или късно.',
       empty_act: 'Новата програма идва скоро', empty_sub: 'Следи тук — или се обади.', empty_stats: 'Програмата за следващия месец идва скоро',
       err: 'Програмата не можа да се зареди. Вероятно има грешка в <code>program.js</code> (липсваща запетая или кавичка). Последната работеща версия е в GitHub — възстанови я или помоли Claude да поправи реда.',
