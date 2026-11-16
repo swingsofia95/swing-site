@@ -28,9 +28,9 @@ Every booking lands in the `#reservations` Discord channel (one message per show
 
 ## Company parties page
 
-`/parties` (`parties.html`) is the landing page for the email and ad campaigns: the offer, the three spaces, the programme options and an inquiry form. Bulgarian by default, English with the switch or `?lang=en` in the link. All copy is in the `T` dictionary at the bottom of the file; photos are in `assets/parties/`.
+`/private-parties` (`private-parties.html`; the old address `/parties` redirects to it) is the landing page for the email and ad campaigns: the offer, the three spaces, the programme options and an inquiry form. Bulgarian by default, English with the switch or `?lang=en` in the link. All copy is in the `T` dictionary at the bottom of the file; photos are in `assets/parties/`.
 
-The form posts to `api/inquiry.js`, which emails the venue inbox (reply goes straight to the person who asked), sends them a short "we got it" copy, and drops a card in the reservations Discord channel (set `INQUIRY_DISCORD_WEBHOOK_URL` in Vercel to use another channel). `utm_source` / `utm_medium` / `utm_campaign` / `utm_content` from the campaign link arrive with the inquiry as "Campaign". A sent inquiry fires the Meta `Lead` event.
+The form posts to `api/inquiry.js`, which emails the venue inbox (reply goes straight to the person who asked), sends them a short "we got it" copy, and drops a card in its own Discord channel (`INQUIRY_DISCORD_WEBHOOK_URL` in Vercel; without it, inquiries fall back to the reservations channel). `utm_source` / `utm_medium` / `utm_campaign` / `utm_content` from the campaign link arrive with the inquiry as "Campaign". A sent inquiry fires the Meta `Lead` event.
 
 The homepage points to it from two temporary places, both marked `TEMP: company-parties promo` in `index.html`: the cream bar above the header and the link under "Book the place". The comment in the CSS lists what to delete when the campaign is over.
 

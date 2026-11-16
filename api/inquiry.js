@@ -1,6 +1,6 @@
 // SWING — company / private party inquiries: POST /api/inquiry
 // ------------------------------------------------------------
-// The form on /parties posts here. This validates the request and hands it to:
+// The form on /private-parties posts here. This validates the request and hands it to:
 //   • Resend — an email to the venue inbox (reply goes straight to the person who asked)
 //     and a short "we got it" copy to them
 //   • the Discord webhook — one card per inquiry, in the same channel as the reservations
@@ -150,7 +150,7 @@ async function sendDiscord(r, id) {
         ...(r.source ? [{ name: 'Campaign', value: r.source, inline: true }] : []),
         { name: 'Ref', value: id, inline: true }
       ],
-      footer: { text: 'swingsofia.com/parties' }, timestamp: new Date().toISOString()
+      footer: { text: 'swingsofia.com/private-parties' }, timestamp: new Date().toISOString()
     }]
   };
   const res = await fetch(url, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) });
