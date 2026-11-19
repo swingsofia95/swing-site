@@ -14,7 +14,7 @@
 // ------------------------------------------------------------
 
 window.SWING_PROGRAM = {
-  updated: "2026-11-18",
+  updated: "2026-11-19",
 
   shows: [
     { date: "2026-11-06", time: "20:30", act: "Leafy & The Capones", sub: "Italian night" },
@@ -28,6 +28,7 @@ window.SWING_PROGRAM = {
     { date: "2026-11-18", time: "19:00", act: "Bon-Bon", allAges: true },
     { date: "2026-11-20", time: "20:00", act: "Boli" },
     { date: "2026-11-21", time: "19:00", act: "KRK", allAges: true },
+    { date: "2026-11-25", time: "19:00", act: "Quiz Night" },
     { date: "2026-11-26", time: "20:00", act: "One Voice Study" },
     { date: "2026-11-27", time: "20:00", act: "Shanti Band" },
     { date: "2026-11-27", time: "23:00", act: "Monolit" },
